@@ -1,0 +1,17 @@
+# Data
+*.twb
+*.csv
+*.log
+*.xls*
+*.ipynb
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints
+*.py[cod]
+*$py.class
+
+#   Distribution
+build/
+dist/

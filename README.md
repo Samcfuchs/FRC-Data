@@ -25,3 +25,11 @@ continues to use that property consistently, this script should work without
 changes. It's worth noting, however, that 2018 already had an issue, where the
 data had an additional field that was not included in the sort orders. This has
 been fixed.
+
+### TeamInfo
+Should work for the forseeable future. The biggest concern here is google's
+geocoder API. It was a little tricky to get this fully functional, and it's
+possible that a change to their quota policy could affect this script.
+
+### TeamDivisions
+Should work for the forseeable future. 
