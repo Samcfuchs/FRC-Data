@@ -74,4 +74,6 @@ for team in divteams:
 print("Writing file")
 with open(FILENAME, 'w', encoding='utf-8') as f:
     f.write(data)
+
 print("Found {0} teams".format(len(divteams)))
+print("Wrote data to {0}".format(FILENAME))
