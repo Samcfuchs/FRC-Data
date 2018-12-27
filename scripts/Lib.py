@@ -154,4 +154,77 @@ def get_full_result(match, alliance):
     """ Returns full results, both result and margin: "W,132" """
     return get_result(match, alliance) + "," + str(get_win_margin(match, alliance))
 
+#### MATCHDATA YEARLY FUNCTIONS ####
+standard_headers = ["Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
+end_headers = ["result", "winMargin"]
+
+breakdown_2016 = ["adjustPoints","autoBoulderPoints","autoBouldersHigh","autoBouldersLow","autoCrossingPoints","autoPoints","autoReachPoints","breachPoints","capturePoints","foulCount","foulPoints","position1crossings","position2","position2crossings","position3","position3crossings","position4","position4crossings","position5","position5crossings","auto","tba_rpEarned","techFoulCount","teleopBoulderPoints","teleopBouldersHigh","teleopBouldersLow","teleopChallengePoints","teleopCrossingPoints","teleopDefensesBreached","teleopPoints","teleopScalePoints","teleopTowerCaptured","totalPoints","towerEndStrength","towerFaceA","towerFaceB","towerFaceC"]
+breakdown_2017 = ["adjustPoints","autoFuelHigh","autoFuelLow","autoFuelPoints","autoMobilityPoints","autoPoints","autoRotorPoints","foulCount","foulPoints","kPaBonusPoints","kPaRankingPointAchieved","autoMobility","rotor1Auto","rotor1Engaged","rotor2Auto","rotor2Engaged","rotor3Engaged","rotor4Engaged","rotorBonusPoints","rotorRankingPointAchieved","tba_rpEarned","techFoulCount","teleopFuelHigh","teleopFuelLow","teleopFuelPoints","teleopPoints","teleopRotorPoints","teleopTakeoffPoints","totalPoints","touchpadFar","touchpadMiddle","touchpadNear"]
+breakdown_2018 = ["adjustPoints","autoOwnershipPoints","autoPoints","autoQuestRankingPoint","autoRun","autoRunPoints","autoScaleOwnershipSec","autoSwitchAtZero","autoSwitchOwnershipSec","endgamePoints","endgame","faceTheBossRankingPoint","foulCount","foulPoints","rp","tba_gameData","techFoulCount","teleopOwnershipPoints","teleopPoints","teleopScaleBoostSec","teleopScaleForceSec","teleopScaleOwnershipSec","teleopSwitchBoostSec","teleopSwitchForceSec","teleopSwitchOwnershipSec","totalPoints","vaultBoostPlayed","vaultBoostTotal","vaultForcePlayed","vaultForceTotal","vaultLevitatePlayed","vaultLevitateTotal","vaultPoints"]
+
+headers = {
+    "2016": standard_headers + breakdown_2016 + end_headers,
+    "2017": standard_headers + breakdown_2017 + end_headers,
+    "2018": standard_headers + breakdown_2018 + end_headers,
+}
+
+
+def trim_breakdown_2018(robot_number, score_breakdown):
+    """ Trim down the score breakdown to include only the scores of the robot_number provided """
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        if field[-1] in ['1','2','3']:
+            fieldbotnumber = int(field[-1]) # Get number for the robot indicated by this data field
+            if robot_number == fieldbotnumber:
+                # Only write the data if the data field number is the same as the robot number
+                val = score_breakdown[field] 
+                if "endgame" in field:
+                    trimmed['endgame'] = val
+                else:
+                    trimmed["AutoRun"] = str(val == "AutoRun")
+        else:
+            # For most fields in score breakdown, write them as-is
+            trimmed[field] = score_breakdown[field]
+
+    return trimmed
+
+def trim_breakdown_2017(robot_number, score_breakdown):
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        if "robot" in field:
+            fieldbotnumber = int(field[5]) # Get number for the robot indicated by this data field
+            if robot_number == fieldbotnumber:
+                # Only write the data if the data field number is the same as the robot number
+                trimmed['auto']  = score_breakdown[field] == "Mobility"
+        else:
+            # For most fields in score breakdown, write them as-is
+            trimmed[field] = score_breakdown[field]
+    
+    return trimmed
+
+def trim_breakdown_2016(robot_number, score_breakdown):
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        # Unreachable code
+        if "robot" in field:
+            fieldbotnumber = int(field[5]) # Get number for the robot indicated by this data field
+            if robot_number == fieldbotnumber:
+                # Only write the data if the data field number is the same as the robot number
+                val = score_breakdown[field]
+                trimmed['auto'] = val
+        else:
+            # For most fields in score breakdown, write them as-is
+            trimmed[field] = score_breakdown[field]
+
+    return trimmed
+
+breakdown_trimmers = {
+    '2016': trim_breakdown_2016,
+    '2017': trim_breakdown_2017,
+    '2018': trim_breakdown_2018
+}
+
 s = init()
