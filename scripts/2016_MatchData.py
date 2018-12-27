@@ -5,7 +5,7 @@ import importlib
 
 lib = importlib.import_module("Lib")
 
-FILENAME = 'data/2016_MatchData_ties.csv'
+FILENAME = 'data/2016_MatchData.csv'
 YEAR = '2016'
 
 s = lib.s
