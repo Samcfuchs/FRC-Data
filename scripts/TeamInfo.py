@@ -6,7 +6,7 @@ import geocoder
 import importlib
 
 lib = importlib.import_module("Lib.py")
-s = lib.s
+s = lib.init()
 
 """
 Use TBA APIv3 to retrieve a list of current FRC teams and their data:

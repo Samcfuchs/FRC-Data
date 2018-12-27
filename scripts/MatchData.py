@@ -13,7 +13,7 @@ except IndexError:
 YEAR = str(YEAR)
 FILENAME = 'data/{}_MatchData_gen.csv'.format(YEAR)
 
-s = lib.s
+s = lib.init()
 
 # define trim_score_breakdown
 if int(YEAR) <= 2014:

@@ -4,7 +4,6 @@ import time
 import sys
 import importlib
 lib = importlib.import_module("Lib")
-s=lib.s
 
 """
 Generates the current ranking table for the given event
@@ -22,8 +21,7 @@ if int(YEAR) < 2007:
     raise ValueError("Only valid for 2007 onward")
 FILENAME = "data/Ranking_" + EVENT_KEY + ".csv"
 
-# Get list of teams from TBA
-
+s = lib.init()
 
 def get_data():
     print("  Getting rankings")

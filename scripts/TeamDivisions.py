@@ -5,8 +5,6 @@ import sys
 import importlib
 lib = importlib.import_module("Lib")
 
-s = lib.s
-
 try:
     YEAR = sys.argv[1]
 except IndexError:
@@ -21,6 +19,8 @@ cmps = {
     '2017': ['mo', 'tx'],
     '2018': ['mi', 'tx']
 }
+
+s = lib.init()
 
 # Get list of teams from championships
 print("Getting list of CMP teams")

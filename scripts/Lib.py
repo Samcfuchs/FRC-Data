@@ -35,12 +35,15 @@ def get_keys():
 
 TBA_KEY, GOOGLE_KEY = get_keys()
 TBA_BASE = "https://www.thebluealliance.com/api/v3"
+s = None
 
 def init():
     # Generate request
-    s = requests.Session()
-    s.headers.update({'X-TBA-Auth-Key' : TBA_KEY})
-    return s
+    session = requests.Session()
+    session.headers.update({'X-TBA-Auth-Key' : TBA_KEY})
+    global s
+    s = session
+    return session
 
 def get_data(year):
     """ Get match and event data for all regular-season events """
@@ -277,5 +280,3 @@ breakdown_trimmers = {
     '2017': trim_breakdown_2017,
     '2018': trim_breakdown_2018
 }
-
-s = init()
