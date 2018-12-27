@@ -92,7 +92,7 @@ def get_event_data(match, event_details):
         matchTime = datetime.fromtimestamp(int(match['actual_time'])) 
         data += matchTime.isoformat(sep=' ') + ','
     except TypeError:
-        print("{0}: Missing timestamp".format(match['key']))
+        #print("{0}: Missing timestamp".format(match['key']))
         data += "null,"
     data += match['key'].split('_')[1] + ','
     data += match['comp_level'] + ','
@@ -128,7 +128,7 @@ def write_event_data(f, match, event_details):
         matchTime = datetime.fromtimestamp(int(match['actual_time'])) 
         f.write(matchTime.isoformat(sep=' ') + ',')
     except TypeError:
-        print("{0}: Missing timestamp".format(match['key']))
+        #print("{0}: Missing timestamp".format(match['key']))
         f.write("null,")
     f.write(match['key'].split('_')[1] + ',') # Match number
     f.write(match['comp_level'] + ',')
