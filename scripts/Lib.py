@@ -1,14 +1,39 @@
 from datetime import date, datetime
 import requests
 import time
+import re
 
 def get_tba_key():
     with open("tba_key.txt", 'r') as f:
         key = f.read().rstrip()
     return key
 
+def get_keys():
+    print("Loading API keys")
+    tba_regex =       r"^TBA_AUTH_KEY:\s*\"(\S*)\"$"
+    google_regex = r"^GOOGLE_AUTH_KEY:\s*\"(\S*)\"$"
 
-TBA_KEY = get_tba_key()
+    # Get text from file
+    with open("keys.txt", 'r') as f:
+        text = f.read()
+    
+    tba_match = re.search(tba_regex, text, re.MULTILINE)
+    google_match = re.search(google_regex, text, re.MULTILINE)
+
+    if tba_match:
+        tba_key = tba_match.group(1)
+    else:
+        print("No TBA key found")
+    
+    if google_match:
+        google_key = google_match.group(1)
+    else:
+        print("No Google key found")
+    
+    return (tba_key, google_key)
+
+
+TBA_KEY, GOOGLE_KEY = get_keys()
 TBA_BASE = "https://www.thebluealliance.com/api/v3"
 
 def init():
