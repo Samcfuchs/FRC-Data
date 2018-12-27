@@ -5,7 +5,7 @@ import time
 import geocoder
 import importlib
 
-lib = importlib.import_module("Lib.py")
+lib = importlib.import_module("Lib")
 s = lib.init()
 
 """
