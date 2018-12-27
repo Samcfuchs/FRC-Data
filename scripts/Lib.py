@@ -2,7 +2,13 @@ from datetime import date, datetime
 import requests
 import time
 
-TBA_KEY = "***REMOVED***"
+def get_tba_key():
+    with open("tba_key.txt", 'r') as f:
+        key = f.read().rstrip()
+    return key
+
+
+TBA_KEY = get_tba_key()
 TBA_BASE = "https://www.thebluealliance.com/api/v3"
 
 def init():
