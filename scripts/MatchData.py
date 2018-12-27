@@ -16,14 +16,18 @@ FILENAME = 'data/{}_MatchData_gen.csv'.format(YEAR)
 s = lib.s
 
 # define trim_score_breakdown
-trim_score_breakdown = lib.breakdown_trimmers[YEAR]
+if int(YEAR) <= 2014:
+    trim_score_breakdown = lib.breakdown_trimmers['2014']
+else:
+    trim_score_breakdown = lib.breakdown_trimmers[YEAR]
 
 
 print("Getting TBA data")
 matches, eventDetails = lib.get_data(YEAR)
 
-print("Removing bad matches")
-matches = lib.remove_empty_matches(matches)
+if int(YEAR) > 2014:
+    print("Removing bad matches")
+    matches = lib.remove_empty_matches(matches)
 
 print("Imported {n} matches".format(n=len(matches)))
 
@@ -45,8 +49,9 @@ for match in matches:
             f.write(alliance + ',')
             f.write(str(robotnumber) + ',')
 
-            bd = trim_score_breakdown(robotnumber, match['score_breakdown'][alliance])
-            f.write(','.join(map(str, bd.values())) + ',')
+            if int(YEAR) > 2014:
+                bd = trim_score_breakdown(robotnumber, match['score_breakdown'][alliance])
+                f.write(','.join(map(str, bd.values())) + ',')
 
             # Record results for this team
             f.write(lib.get_full_result(match,alliance))

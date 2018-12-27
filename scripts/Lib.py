@@ -62,6 +62,8 @@ def get_event_details(key):
     return details
 
 zero_days = {
+    "2014": date(2014, 2, 19),
+    "2015": date(2015, 2, 17),
     "2016": date(2016, 2, 23),
     "2017": date(2017, 2, 21),
     '2018': date(2018, 2, 20)
@@ -158,11 +160,15 @@ def get_full_result(match, alliance):
 standard_headers = ["Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
 end_headers = ["result", "winMargin"]
 
+breakdown_2014 = []
+breakdown_2015 = ["adjust_points","container_count_level1","container_count_level2","container_count_level3","container_count_level4","container_count_level5","container_count_level6","container_points","container_set","foul_count","foul_points","litter_count_container","litter_count_landfill","litter_count_unprocessed","litter_points","robot_set","teleop_points","total_points","tote_count_far","tote_count_near","tote_points","tote_set","tote_stack"]
 breakdown_2016 = ["adjustPoints","autoBoulderPoints","autoBouldersHigh","autoBouldersLow","autoCrossingPoints","autoPoints","autoReachPoints","breachPoints","capturePoints","foulCount","foulPoints","position1crossings","position2","position2crossings","position3","position3crossings","position4","position4crossings","position5","position5crossings","auto","tba_rpEarned","techFoulCount","teleopBoulderPoints","teleopBouldersHigh","teleopBouldersLow","teleopChallengePoints","teleopCrossingPoints","teleopDefensesBreached","teleopPoints","teleopScalePoints","teleopTowerCaptured","totalPoints","towerEndStrength","towerFaceA","towerFaceB","towerFaceC"]
 breakdown_2017 = ["adjustPoints","autoFuelHigh","autoFuelLow","autoFuelPoints","autoMobilityPoints","autoPoints","autoRotorPoints","foulCount","foulPoints","kPaBonusPoints","kPaRankingPointAchieved","autoMobility","rotor1Auto","rotor1Engaged","rotor2Auto","rotor2Engaged","rotor3Engaged","rotor4Engaged","rotorBonusPoints","rotorRankingPointAchieved","tba_rpEarned","techFoulCount","teleopFuelHigh","teleopFuelLow","teleopFuelPoints","teleopPoints","teleopRotorPoints","teleopTakeoffPoints","totalPoints","touchpadFar","touchpadMiddle","touchpadNear"]
 breakdown_2018 = ["adjustPoints","autoOwnershipPoints","autoPoints","autoQuestRankingPoint","autoRun","autoRunPoints","autoScaleOwnershipSec","autoSwitchAtZero","autoSwitchOwnershipSec","endgamePoints","endgame","faceTheBossRankingPoint","foulCount","foulPoints","rp","tba_gameData","techFoulCount","teleopOwnershipPoints","teleopPoints","teleopScaleBoostSec","teleopScaleForceSec","teleopScaleOwnershipSec","teleopSwitchBoostSec","teleopSwitchForceSec","teleopSwitchOwnershipSec","totalPoints","vaultBoostPlayed","vaultBoostTotal","vaultForcePlayed","vaultForceTotal","vaultLevitatePlayed","vaultLevitateTotal","vaultPoints"]
 
 headers = {
+    "2014": standard_headers + breakdown_2014 + end_headers,
+    "2015": standard_headers + breakdown_2015 + end_headers,
     "2016": standard_headers + breakdown_2016 + end_headers,
     "2017": standard_headers + breakdown_2017 + end_headers,
     "2018": standard_headers + breakdown_2018 + end_headers,
@@ -221,7 +227,21 @@ def trim_breakdown_2016(robot_number, score_breakdown):
 
     return trimmed
 
+def trim_breakdown_2015(robot_number, score_breakdown):
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        # For most fields in score breakdown, write them as-is
+        trimmed[field] = score_breakdown[field]
+
+    return trimmed
+
+def trim_breakdown_2014(robot_number, score_breakdown):
+    return {}
+
 breakdown_trimmers = {
+    '2014': trim_breakdown_2014,
+    '2015': trim_breakdown_2015,
     '2016': trim_breakdown_2016,
     '2017': trim_breakdown_2017,
     '2018': trim_breakdown_2018
