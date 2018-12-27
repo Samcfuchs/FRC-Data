@@ -72,7 +72,10 @@ def get_team_data(year, append='', doprint=True):
     while True:
         if doprint:
             print("Page {0} loaded".format(page))
-        r = s.get("{0}/teams/{1}/{2}{3}".format(TBA_BASE, year, page, append))
+        if year == 0:
+            r = s.get("{0}/teams/{p}{app}".format(TBA_BASE, p=page, app=append))
+        else:
+            r = s.get("{0}/teams/{yr}/{p}{app}".format(TBA_BASE, yr=year, p=page, app=append))
 
         # Stop loading when we get served an empty page
         if len(r.json()) == 0:
