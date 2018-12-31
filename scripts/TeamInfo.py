@@ -27,20 +27,10 @@ FILENAME = 'data/TeamInfo.csv'
 
 # Get list of teams from TBA
 print("Getting data")
-data = []
-n = 0
-while True:
-    print("Page {0} loaded".format(n))
-    r = s.get("{0}/teams/2018/{1}/simple".format(lib.TBA_BASE, n))
-    # Stop loading once we get served an empty page
-    if len(r.json()) == 0:
-        break
-    data += r.json()
-    n += 1
+teams = lib.get_team_data(0, '/simple', True)
 
-print("Retrieved {} teams".format(len(data)))
+print("Retrieved {} teams".format(len(teams)))
 
-teams = data
 problemTeams = []
 
 print("Writing file")
@@ -62,7 +52,7 @@ with open(FILENAME, 'w', encoding='utf-8') as f:
         f.write(',')
 
         try:
-            f.write('"' + team['city'] + '"')
+            f.write('"{}"'.format(team['city']))
         except UnicodeEncodeError:
             print("City: " + team['key'] + ": " + LINK_BASE + team['key'][3:])
             problemTeams.append(team['key'])
