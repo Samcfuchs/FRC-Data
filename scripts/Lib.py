@@ -228,6 +228,64 @@ headers = {
     "2019": standard_headers + breakdown_2019 + end_headers,
 }
 
+def calculate_score_2019(result):
+    result = result.lower()
+    score = 0
+    if result == "unknown":
+        return "NA"
+    if "panel" in result:
+        score += 2
+    if "cargo" in result:
+        score += 3
+    return score
+
+
+pattern = re.compile(r"tRocket|[bB]ay\d")
+def is_a_bay_field(fieldname):
+    return pattern.search(fieldname)
+
+
+def process_endgame_2019(val):
+    if val == "None":
+        return 0
+    elif val == "Unknown":
+        return "NA"
+    else:
+        return int(val[-1])
+
+
+def process_prematch_2019(val):
+    if val == "None":
+        return 0
+    elif val == "Unknown":
+        return "NA"
+    else:
+        return int(val[-1])
+    
+
+def trim_breakdown_2019(robot_number, score_breakdown):
+    """ Trim the score breakdown to include only the scores of the robot_number provided """
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        if "Robot" in field:
+            fieldbotnumber = int(field[-1]) # Get the number for the robot indicated by this data field
+            if robot_number == fieldbotnumber:
+                val = score_breakdown[field]
+                if "endgame" in field:
+                    trimmed['endgame'] = process_endgame_2019(val)
+                elif "habLine" in field:
+                    trimmed['autoLine'] = str(val == "CrossedHabLineInSandstorm")
+                elif "preMatchLevel" in field:
+                    trimmed["preMatchLevel"] = process_prematch_2019(val)
+        elif is_a_bay_field(field):
+            trimmed[field] = calculate_score_2019(score_breakdown[field])
+        else:
+            trimmed[field] = score_breakdown[field]
+    
+    return trimmed
+
+
 
 def trim_breakdown_2018(robot_number, score_breakdown):
     """ Trim down the score breakdown to include only the scores of the robot_number provided """
@@ -298,5 +356,6 @@ breakdown_trimmers = {
     '2015': trim_breakdown_2015,
     '2016': trim_breakdown_2016,
     '2017': trim_breakdown_2017,
-    '2018': trim_breakdown_2018
+    '2018': trim_breakdown_2018,
+    '2019': trim_breakdown_2019
 }
