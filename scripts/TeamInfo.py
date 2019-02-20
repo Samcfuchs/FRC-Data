@@ -33,6 +33,21 @@ print("Retrieved {} teams".format(len(teams)))
 
 problemTeams = []
 
+def get_coords(team_key):
+    r = s.get("{base}/team/{key}/simple".format(base=lib.TBA_BASE, key=team_key))
+    team = r.json()
+    print(team)
+
+    loc = ",".join([team['city'], team['state_prov'], team['country']])
+    geo = geocoder.google(loc, rate_limit=False)
+    print(geo)
+    if (geo.status == "ZERO_RESULTS"):
+        print("No geocode for {} @ {}".format(team['key'], loc))
+    elif (geo.status == "OVER_QUERY_LIMIT"):
+        print("Over query limit on {} @ {}".format(team['key'], loc))
+    elif (geo.status == "OK"):
+        return geo
+
 print("Writing file")
 with open(FILENAME, 'w', encoding='utf-8') as f:
     f.write('Team,Nickname,City,State,Country,Latitude,Longitude\n')
@@ -40,7 +55,12 @@ with open(FILENAME, 'w', encoding='utf-8') as f:
     for team in teams[i:]:
         print("{}: {}".format(i, team['key']))
         i += 1
-        f.write(team['key'][3:])
+
+        if lib.is_team_historic(team):
+            f.write("{n},{nick},null,null,null,null,null\n".format(n=team['team_number'], nick=team['nickname']))
+            continue
+
+        f.write(str(team['team_number']))
         f.write(',')
 
         try:
@@ -63,22 +83,20 @@ with open(FILENAME, 'w', encoding='utf-8') as f:
 
         f.write('"{}",'.format(team['country']))
 
-        loc = ",".join([team['city'], team['state_prov'], team['country']])
-        geo = geocoder.google(loc, rate_limit=False)
-        if (geo.status == "ZERO_RESULTS"):
-            print("No geocode for {} @ {}".format(team['key'], loc))
-        if (geo.status == "OK"):
-            f.write(str(geo.latlng[0]))
-            f.write(',')
+        if lib.GOOGLE_KEY != "":
+            loc = ",".join([team['city'], team['state_prov'], team['country']])
+            geo = geocoder.google(loc, rate_limit=False)
+            if (geo.status == "ZERO_RESULTS"):
+                print("No geocode for {} @ {}".format(team['key'], loc))
+            if (geo.status == "OK"):
+                f.write(str(geo.latlng[0]))
+                f.write(',')
 
-            f.write(str(geo.latlng[1]))
-        else:
-            problemTeams.append(team['key'])
-            print("Geocode error for {} @ {}".format(team['key'], loc))
-            f.write("null")
-            f.write(',')
-
-            f.write("null")
+                f.write(str(geo.latlng[1]))
+            else:
+                problemTeams.append(team['key'])
+                print("Geocode error for {} @ {}".format(team['key'], loc))
+                f.write("null,null")
 
         f.write('\n')
 
