@@ -45,15 +45,18 @@ def init():
     s = session
     return session
 
-def get_data(year):
+def get_data(year, preseason=False):
     """ Get match and event data for all regular-season events """
+    event_types = list(range(0,7))
+    if preseason:
+        event_types += [100]
     r = s.get(TBA_BASE + '/events/{0}/simple'.format(year))
     events = r.json() # Get json version of match data
     matchlist = []
     eventDetails = {}
     for event in events:
         # Throw out off/preseasons
-        if event['event_type'] not in range(0,7):
+        if event['event_type'] not in event_types:
             continue
         r = s.get(TBA_BASE + '/event/' + event['key'] + '/matches')
         eventdata = r.json()
