@@ -110,12 +110,15 @@ def get_event_details(key):
     details['week'] = get_week(matchDate)
     return details
 
+# The zero-day is used to determine the week number of an event
+# Typically it's placed 8 days before the first week 1 event day
 zero_days = {
     "2014": date(2014, 2, 19),
     "2015": date(2015, 2, 17),
     "2016": date(2016, 2, 23),
     "2017": date(2017, 2, 21),
-    '2018': date(2018, 2, 20)
+    '2018': date(2018, 2, 20),
+    '2019': date(2019, 2, 19)
 }
 def get_week(eventDate):
     """ Get the FRC-conventional week number of the given date """
@@ -214,6 +217,7 @@ breakdown_2015 = ["adjust_points","container_count_level1","container_count_leve
 breakdown_2016 = ["adjustPoints","autoBoulderPoints","autoBouldersHigh","autoBouldersLow","autoCrossingPoints","autoPoints","autoReachPoints","breachPoints","capturePoints","foulCount","foulPoints","position1crossings","position2","position2crossings","position3","position3crossings","position4","position4crossings","position5","position5crossings","auto","tba_rpEarned","techFoulCount","teleopBoulderPoints","teleopBouldersHigh","teleopBouldersLow","teleopChallengePoints","teleopCrossingPoints","teleopDefensesBreached","teleopPoints","teleopScalePoints","teleopTowerCaptured","totalPoints","towerEndStrength","towerFaceA","towerFaceB","towerFaceC"]
 breakdown_2017 = ["adjustPoints","autoFuelHigh","autoFuelLow","autoFuelPoints","autoMobilityPoints","autoPoints","autoRotorPoints","foulCount","foulPoints","kPaBonusPoints","kPaRankingPointAchieved","autoMobility","rotor1Auto","rotor1Engaged","rotor2Auto","rotor2Engaged","rotor3Engaged","rotor4Engaged","rotorBonusPoints","rotorRankingPointAchieved","tba_rpEarned","techFoulCount","teleopFuelHigh","teleopFuelLow","teleopFuelPoints","teleopPoints","teleopRotorPoints","teleopTakeoffPoints","totalPoints","touchpadFar","touchpadMiddle","touchpadNear"]
 breakdown_2018 = ["adjustPoints","autoOwnershipPoints","autoPoints","autoQuestRankingPoint","autoRun","autoRunPoints","autoScaleOwnershipSec","autoSwitchAtZero","autoSwitchOwnershipSec","endgamePoints","endgame","faceTheBossRankingPoint","foulCount","foulPoints","rp","tba_gameData","techFoulCount","teleopOwnershipPoints","teleopPoints","teleopScaleBoostSec","teleopScaleForceSec","teleopScaleOwnershipSec","teleopSwitchBoostSec","teleopSwitchForceSec","teleopSwitchOwnershipSec","totalPoints","vaultBoostPlayed","vaultBoostTotal","vaultForcePlayed","vaultForceTotal","vaultLevitatePlayed","vaultLevitateTotal","vaultPoints"]
+breakdown_2019 = ['adjustPoints', 'autoPoints', 'bay1', 'bay2', 'bay3', 'bay4', 'bay5', 'bay6', 'bay7', 'bay8', 'cargoPoints', 'completeRocketRankingPoint', 'completedRocketFar', 'completedRocketNear', 'endgame', 'foulCount', 'foulPoints', 'habClimbPoints', 'habDockingRankingPoint', 'habLine', 'hatchPanelPoints', 'lowLeftRocketFar', 'lowLeftRocketNear', 'lowRightRocketFar', 'lowRightRocketNear', 'midLeftRocketFar', 'midLeftRocketNear', 'midRightRocketFar', 'midRightRocketNear', 'preMatchBay1', 'preMatchBay2', 'preMatchBay3', 'preMatchBay6', 'preMatchBay7', 'preMatchBay8', 'preMatchLevel', 'rp', 'sandStormBonusPoints', 'techFoulCount', 'teleopPoints', 'topLeftRocketFar', 'topLeftRocketNear', 'topRightRocketFar', 'topRightRocketNear', 'totalPoints']
 
 headers = {
     "2014": standard_headers + breakdown_2014 + end_headers,
@@ -221,6 +225,7 @@ headers = {
     "2016": standard_headers + breakdown_2016 + end_headers,
     "2017": standard_headers + breakdown_2017 + end_headers,
     "2018": standard_headers + breakdown_2018 + end_headers,
+    "2019": standard_headers + breakdown_2019 + end_headers,
 }
 
 
