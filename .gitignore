@@ -15,3 +15,5 @@ __pycache__/
 #   Distribution
 build/
 dist/
+
+keys.txt
