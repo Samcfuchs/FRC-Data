@@ -84,6 +84,15 @@ def get_team_data(year, append='', doprint=True):
         page += 1
     return data
 
+
+def is_team_historic(team):
+    """ Determine whether a SimpleTeam object represents a historic team """
+    if team['nickname'] == "Team " + str(team['team_number']):
+        return True
+    if team['city'] == None and team['country'] == None and team['state_prov'] == None:
+        return True
+    return False
+
 # Generate a dictionary of the details of the event
 def get_event_details(key):
     """ Generate a dictionary of relevant event information """
