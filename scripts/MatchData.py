@@ -11,7 +11,7 @@ except IndexError:
     YEAR = input("Year (e.g. 2018): ")
 
 YEAR = str(YEAR)
-FILENAME = 'data/{}_MatchData_gen.csv'.format(YEAR)
+FILENAME = 'data/{}_MatchData.csv'.format(YEAR)
 
 s = lib.init()
 
