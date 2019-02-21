@@ -16,4 +16,6 @@ __pycache__/
 build/
 dist/
 
+.vscode/settings.json
+
 keys.txt
