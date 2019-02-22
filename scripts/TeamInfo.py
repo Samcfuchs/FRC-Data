@@ -3,10 +3,7 @@ from datetime import date, datetime
 import time
 # Make sure you set your API key first
 import geocoder
-import importlib
-
-lib = importlib.import_module("Lib")
-s = lib.init()
+import lib
 
 """
 Use TBA APIv3 to retrieve a list of current FRC teams and their data:
@@ -24,6 +21,8 @@ Store this data in a csv file TeamInfo.csv
 
 LINK_BASE = "https://www.thebluealliance.com/team/"
 FILENAME = 'data/TeamInfo.csv'
+
+s = lib.init()
 
 # Get list of teams from TBA
 print("Getting data")

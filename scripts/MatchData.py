@@ -1,7 +1,5 @@
 import sys
-import importlib
-
-lib = importlib.import_module("Lib")
+import lib
 
 # Get year
 try:

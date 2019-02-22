@@ -2,8 +2,7 @@ import requests
 from datetime import date, datetime
 import time
 import sys
-import importlib
-lib = importlib.import_module("Lib")
+import lib
 
 """
 Generates the current ranking table for the given event

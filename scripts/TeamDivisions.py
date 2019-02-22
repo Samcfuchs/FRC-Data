@@ -2,8 +2,7 @@ import requests
 from datetime import date, datetime
 import time
 import sys
-import importlib
-lib = importlib.import_module("Lib")
+import lib
 
 try:
     YEAR = sys.argv[1]
