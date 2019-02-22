@@ -22,7 +22,7 @@ Store this data in a csv file TeamInfo.csv
 LINK_BASE = "https://www.thebluealliance.com/team/"
 FILENAME = 'data/TeamInfo.csv'
 
-s = lib.init()
+s, has_tba, has_google = lib.init()
 
 # Get list of teams from TBA
 print("Getting data")
@@ -82,7 +82,7 @@ with open(FILENAME, 'w', encoding='utf-8') as f:
 
         f.write('"{}",'.format(team['country']))
 
-        if lib.GOOGLE_KEY != "":
+        if has_google != "":
             loc = ",".join([team['city'], team['state_prov'], team['country']])
             geo = geocoder.google(loc, rate_limit=False)
             if (geo.status == "ZERO_RESULTS"):

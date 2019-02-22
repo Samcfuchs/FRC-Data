@@ -2,6 +2,7 @@ from datetime import date, datetime
 import requests
 import time
 import re
+import os
 
 def get_keys():
     print("Loading API keys")
@@ -28,17 +29,26 @@ def get_keys():
     return (tba_key, google_key)
 
 
-TBA_KEY, GOOGLE_KEY = get_keys()
-TBA_BASE = "https://www.thebluealliance.com/api/v3"
 s = None
+TBA_BASE = "https://www.thebluealliance.com/api/v3"
 
 def init():
+    # Get keys
+    TBA_KEY, GOOGLE_KEY = get_keys()
+
+    # Store google key
+    os.environ["GOOGLE_API_KEY"] = GOOGLE_KEY
+
     # Generate request
     session = requests.Session()
     session.headers.update({'X-TBA-Auth-Key' : TBA_KEY})
     global s
     s = session
-    return session
+
+    has_tba = TBA_KEY != ""
+    has_google = GOOGLE_KEY != ""
+
+    return session, has_tba, has_google
 
 def get_data(year, preseason=False):
     """ Get match and event data for all regular-season events """
