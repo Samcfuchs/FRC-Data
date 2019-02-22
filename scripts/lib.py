@@ -3,11 +3,6 @@ import requests
 import time
 import re
 
-def get_tba_key():
-    with open("tba_key.txt", 'r') as f:
-        key = f.read().rstrip()
-    return key
-
 def get_keys():
     print("Loading API keys")
     tba_regex =       r"^TBA_AUTH_KEY:\s*\"(\S*)\"$"
