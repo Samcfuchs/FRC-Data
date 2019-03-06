@@ -30,7 +30,7 @@ if int(YEAR) > 2014:
 print("Imported {n} matches".format(n=len(matches)))
 
 print("Writing file")
-f = open(FILENAME, 'w')
+f = open(FILENAME, 'w', encoding='utf-8')
 
 print("Writing header")
 f.write(','.join(lib.headers[YEAR]) + "\n")
