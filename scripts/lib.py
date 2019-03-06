@@ -3,6 +3,7 @@ import requests
 import time
 import re
 import os
+import tbapy
 
 def get_keys():
     print("Loading API keys")
@@ -39,6 +40,8 @@ def init():
     # Store google key
     os.environ["GOOGLE_API_KEY"] = GOOGLE_KEY
 
+    tba = tbapy.TBA(TBA_KEY)
+
     # Generate request
     session = requests.Session()
     session.headers.update({'X-TBA-Auth-Key' : TBA_KEY})
@@ -48,7 +51,7 @@ def init():
     has_tba = TBA_KEY != ""
     has_google = GOOGLE_KEY != ""
 
-    return session, has_tba, has_google
+    return session, tba, has_tba, has_google
 
 def get_data(year, preseason=False):
     """ Get match and event data for all regular-season events """
