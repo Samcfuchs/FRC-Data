@@ -4,6 +4,7 @@
 *.log
 *.xls*
 *.ipynb
+*.hyper
 
 # Python
 __pycache__/
