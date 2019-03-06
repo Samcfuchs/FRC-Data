@@ -118,6 +118,10 @@ def get_event_details(key):
 # The zero-day is used to determine the week number of an event
 # Typically it's placed 8 days before the first week 1 event day
 zero_days = {
+    "2010": date(2010, 2, 24),
+    "2011": date(2011, 2, 23),
+    "2012": date(2012, 2, 21),
+    "2013": date(2013, 2, 20),
     "2014": date(2014, 2, 19),
     "2015": date(2015, 2, 17),
     "2016": date(2016, 2, 23),
