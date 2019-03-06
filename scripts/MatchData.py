@@ -16,8 +16,10 @@ s = lib.init()
 # define trim_score_breakdown
 if int(YEAR) <= 2014:
     trim_score_breakdown = lib.breakdown_trimmers['2014']
+    headers = lib.headers['2014']
 else:
     trim_score_breakdown = lib.breakdown_trimmers[YEAR]
+    headers = lib.headers[YEAR]
 
 
 print("Getting TBA data")
@@ -33,7 +35,7 @@ print("Writing file")
 f = open(FILENAME, 'w', encoding='utf-8')
 
 print("Writing header")
-f.write(','.join(lib.headers[YEAR]) + "\n")
+f.write(','.join(headers) + "\n")
 
 print("Writing data")
 for match in matches:
