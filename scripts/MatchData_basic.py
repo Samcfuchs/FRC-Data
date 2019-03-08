@@ -9,42 +9,66 @@ except IndexError:
     YEAR = input("Year (e.g. 2018): ")
 
 YEAR = str(YEAR)
-FILENAME = 'data/MatchData_basic.csv'
+FILENAME = 'data/{}_MatchData_basic.csv'.format(YEAR)
+HEADERS = ["Year","Event","Competition Level","Set","Match","Week","City","State","Country","Time","Team","Alliance","Robot Number","Score","Result","Win Margin"]
+FILE_MODE = 'w'
 
-s = lib.init()
+append_mode = True
+if append_mode:
+    FILENAME = 'data/MatchData_basic.csv'
+    FILE_MODE = 'a'
+
+s, tba, _, _ = lib.init()
 
 headers = lib.headers['2014']
 
 print("Getting TBA data")
-matches, eventDetails = lib.get_data(YEAR)
+print("Getting events")
+eventlist = tba.events(YEAR, simple=True)
 
-print("Imported {n} matches".format(n=len(matches)))
+print("Trimming non-official events")
+eventlist = [e for e in eventlist if e.event_type in list(range(0,7))]
+
+print("Getting matches")
+matchlist = []
+for event in eventlist:
+    matchlist += tba.event_matches(event['key'], simple=True)
+
+print("Imported {n} matches".format(n=len(matchlist)))
 
 print("Writing file")
-f = open(FILENAME, 'a', encoding='utf-8')
+f = open(FILENAME, FILE_MODE, encoding='utf-8')
 
-print("Writing header")
-#f.write('Year,'+','.join(headers) + "\n")
+if not append_mode:
+    print("Writing header")
+    f.write(','.join(HEADERS) + "\n")
 
 print("Writing data")
-for match in matches:
+data = ""
+for match in matchlist:
+    event = next(e for e in eventlist if e.key == match.event_key)
     for alliance in match['alliances']:
         robotnumber = 1
         for team in match['alliances'][alliance]['team_keys']:
-            f.write(YEAR + ',')
-            f.write(lib.get_event_data(match, eventDetails))
-
-            # Team/alliance stuff
-            f.write(team[3:] + ',')
-            f.write(alliance + ',')
-            f.write(str(robotnumber) + ',')
-
-            # Record results for this team
-            f.write(lib.get_full_result(match,alliance))
-
-            f.write("\n")
+            data += YEAR + ','
+            data += match.event_key[4:] + ','
+            data += match.comp_level + ','
+            data += str(match.set_number) + ','
+            data += str(match.match_number) + ','
+            data += str(lib.get_week(event.start_date)) + ','
+            data += str(event.city) + ','
+            data += str(event.state_prov) + ','
+            data += str(event.country) + ','
+            data += lib.get_from_timestamp(match.time) + ','
+            data += team[3:] + ','
+            data += alliance + ','
+            data += str(robotnumber) + ','
+            data += str(match.alliances[alliance]['score']) + ','
+            data += lib.get_full_result(match, alliance)
+            data += '\n'
 
             robotnumber += 1 # Increment robot number to move on to next team in alliance
 
+f.write(data)
 f.close()
 print("Wrote data to {fname}".format(fname=FILENAME))
