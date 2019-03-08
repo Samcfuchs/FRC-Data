@@ -50,21 +50,25 @@ for match in matchlist:
     for alliance in match['alliances']:
         robotnumber = 1
         for team in match['alliances'][alliance]['team_keys']:
-            data += YEAR + ','
-            data += match.event_key[4:] + ','
-            data += match.comp_level + ','
-            data += str(match.set_number) + ','
-            data += str(match.match_number) + ','
-            data += str(lib.get_week(event.start_date)) + ','
-            data += str(event.city) + ','
-            data += str(event.state_prov) + ','
-            data += str(event.country) + ','
-            data += lib.get_from_timestamp(match.time) + ','
-            data += team[3:] + ','
-            data += alliance + ','
-            data += str(robotnumber) + ','
-            data += str(match.alliances[alliance]['score']) + ','
-            data += lib.get_full_result(match, alliance)
+            row = [
+                YEAR,
+                match.event_key[4:],
+                match.comp_level,
+                str(match.set_number),
+                str(match.match_number),
+                str(lib.get_week(event.start_date)),
+                str(event.city),
+                str(event.state_prov),
+                str(event.country),
+                lib.get_from_timestamp(match.time),
+                team[3:],
+                alliance,
+                str(robotnumber),
+                str(match.alliances[alliance]['score']),
+                lib.get_full_result(match, alliance)
+            ]
+
+            data += ','.join(row)
             data += '\n'
 
             robotnumber += 1 # Increment robot number to move on to next team in alliance
