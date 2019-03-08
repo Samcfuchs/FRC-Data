@@ -132,10 +132,12 @@ zero_days = {
     '2018': date(2018, 2, 20),
     '2019': date(2019, 2, 19)
 }
-def get_week(eventDate):
+def get_week(date):
     """ Get the FRC-conventional week number of the given date """
-    zero_day = zero_days[str(eventDate.year)]
-    delta = eventDate - zero_day
+    if type(date) is str:
+        date = datetime.strptime(date, "%Y-%m-%d").date()
+    zero_day = zero_days[str(date.year)]
+    delta = date - zero_day
     return int(delta.days / 7)
 
 def get_event_data(match, event_details):
