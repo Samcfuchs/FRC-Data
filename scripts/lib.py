@@ -140,6 +140,13 @@ def get_week(date):
     delta = date - zero_day
     return int(delta.days / 7)
 
+def get_from_timestamp(t: int):
+    try:
+        time = datetime.fromtimestamp(t)
+        return time.isoformat(sep=' ')
+    except TypeError:
+        return "null"
+
 def get_event_data(match, event_details):
     """ Return event data as a comma-sep string, as well as the match time and number """
     data = ""
@@ -147,8 +154,6 @@ def get_event_data(match, event_details):
     # Event/match stuff
     # Match key example: "2018cmpmi_qm30"
     eventKey = matchkey.split('_')[0] # Get event portion
-    # f.write(eventKey[4:] + ',') # cut off the year
-    # f.write(str(event_details[eventKey]['week']) + ',') # Week
     data += eventKey[4:] + ','
     data += str(event_details[eventKey]['week']) + ','
 
