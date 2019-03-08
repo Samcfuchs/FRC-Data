@@ -27,7 +27,7 @@ s, tba, _, _ = lib.init()
 def get_header(rank):
     data = ""
     data += 'Rank,Team,'
-    data += ','.join(map(lambda p : p['name'], rank.sort_order_info))
+    data += ','.join(map(lambda p : p['name'], rank['sort_order_info']))
 
     if YEAR == "2018":
         data += ",Null"
