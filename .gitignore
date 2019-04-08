@@ -1,10 +1,13 @@
 # Data
-*.twb*
 *.csv
 *.log
 *.xls*
-*.ipynb
 *.hyper
+
+# Analytics
+*.twb*
+*.ipynb
+*.png
 
 # Python
 __pycache__/
