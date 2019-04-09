@@ -1,35 +1,40 @@
-# Analytics
+# FRC Data Retrieval
+
 Various data retrieval scripts to import, clean, and save FRC data to csv files
 
 All data is written to files in the `data` folder.
 
-## Lib
-The file Lib.py contains many of the methods used to retrieve data from The
-Blue Alliance API. Most of these functions are documented well enough to
-understand what they're doing.
+## Installation
+
+Parts of this library use Erik Boesen's [tbapy](http://github.com/frc1418/tbapy)
+library. You'll need to install it with `pip install tbapy` in order for those
+scripts to work. For TeamInfo.py, you'll also need to `pip install geocoder`.
+
+In order to use the APIs these scripts access, you'll need to obtain
+authorization keys. You can get a TBA key
+[here](https://www.thebluealliance.com/account/). Additionally, TeamInfo.py uses
+google's geocoder API to get geographic coordinates for each team. Learn more
+about the geocoding API and get a key
+[here](https://developers.google.com/maps/documentation/geocoding/get-api-key).
+Once you have authorization keys, add them to the `keys.txt` file like so:
+
+    TBA_AUTH_KEY: "MWx1TOGHBXq9z6MLwBBZaMLmpjHtq9N8SNSM1uRGth6NcwgwGPlzBmTrh0aXjtTM"
+    GOOGLE_AUTH_KEY: "CoUnNf9rjohalGRkp2SJ-MLs861u3T7CUhW3ZD0"
 
 ## Analytics
+
 Once the data is saved to csv files, it can be analyzed with a number of tools.
-It's simple to open in excel, but I've also used R, Tableau, TIBCO Spotfire, and python scripts to allow
-deeper insights into databases of this size. TeamInfo.py provides basic team
-name and location information, which helps to contextualize data displays.
+It's simple to open in excel, but I've also used R, Tableau, TIBCO Spotfire, and
+python scripts to allow deeper insights into databases of this size. I encourage
+you to conduct your own exploratory data analysis and publish your findings!
 
 ## Futurity
-I've tried to make all of these scripts as general as possible. I'll go over 
-the futurity of each one below.
 
-### EventRanking
-Should work for the forseeable future. EventRanking uses a property `sort_orders` 
-provided in the TBA database to name the column headers. As long as TBA
-continues to use that property consistently, this script should work without
-changes. It's worth noting, however, that 2018 already had an issue, where the
-data had an additional field that was not included in the sort orders. This has
-been fixed.
-
-### TeamInfo
-Should work for the forseeable future. The biggest concern here is google's
-geocoder API. It was a little tricky to get this fully functional, and it's
-possible that a change to their quota policy could affect this script.
-
-### TeamDivisions
-Should work for the forseeable future. 
+I've worked pretty hard to ensure that these scripts are as general and
+future-proof as possible, but since I don't control the APIs or databases I'm
+using, there's always the possibility that a change in the future could break
+these. If you're encountering errors, please feel free to create an issue or PR.
+In particular, the MatchData script does a lot of preprocessing of the data from
+The Blue Alliance, and as a result it needs to be updated on a yearly basis.
+Unfortunately, FIRST releases it's API spec as late as week 1 competitions
+sometimes, so I'm unable to update them until then.
