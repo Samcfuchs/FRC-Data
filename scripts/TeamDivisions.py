@@ -19,7 +19,7 @@ cmps = {
     '2018': ['mi', 'tx']
 }
 
-s = lib.init()
+s,_,_,_ = lib.init()
 
 # Get list of teams from championships
 print("Getting list of CMP teams")
