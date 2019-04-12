@@ -5,74 +5,50 @@ import sys
 import lib
 
 try:
-    YEAR = sys.argv[1]
+    YEAR = int(sys.argv[1])
 except IndexError:
     YEAR = input("Year (e.g. 2018): ")
 
 if int(YEAR) < 2007:
     raise ValueError("Only valid for 2007 onward")
-FILENAME = "data/{}_TeamDivisions.csv".format(YEAR)
+FILENAME = "data/{}_TeamDivisions_1.csv".format(YEAR)
+
 divList = ['carv', 'gal', 'hop', 'new', 'roe', 'tur', 'arc', 'cars', 'cur', 'tes', 'dal', 'dar']
-cmps = {
-    '2016': [''],
-    '2017': ['mo', 'tx'],
-    '2018': ['mi', 'tx']
-}
-
-s,_,_,_ = lib.init()
-
-# Get list of teams from championships
-print("Getting list of CMP teams")
-cmpteams = {}
-for div in divList:
-    r = s.get('{base}/event/{yr}{div}/teams/keys'.format(base=lib.TBA_BASE, yr=YEAR, div=div))
-    for team in r.json():
-        cmpteams[team] = div
-
-print("Getting list of Einstein teams")
-einsteinteams = []
-if int(YEAR) <= 2016:
-    cmpyr = "2016"
+if YEAR <= 2016:
+    cmps = [""]
 elif int(YEAR) == 2017:
-    cmpyr = "2017"
+    cmps = ["mo", "tx"]
 else:
-    cmpyr = "2018"
-for cmp in cmps[cmpyr]:
-    r = s.get('{base}/event/{yr}cmp{cmp}/teams/keys'.format(base=lib.TBA_BASE, yr=YEAR, cmp=cmp))
-    einsteinteams += r.json()
+    cmps = ["tx", "mi"]
 
-def getDivision(team):
-    if type(team) is int:
-        team = "frc" + str(team)
+s, tba, _, _ = lib.init()
 
-    if team not in cmpteams:
-        return "NA"
-    else:
-        return cmpteams[team]
+print("Getting list of teams")
+teamlist = tba.teams(year=YEAR, keys=True)
 
-print("Getting team list")
-teamdata = lib.get_team_data(YEAR,"/keys")
+print("Getting division lists")
+divTeams = {div: tba.event_teams(str(YEAR) + div, keys=True) for div in divList}
 
-print("Associating team divisions")
-divteams = {}
-for team in teamdata:
-    divteams[team] = getDivision(team)
+teamDivs = {t: div for div,teams in divTeams.items() for t in teams}
 
-print("Building filestring")
-data = ""
-data += "Team,Division,Einstein\n"
-for team in divteams:
-    data += team[3:] + ","
-    data += divteams[team] + ','
-    if team in einsteinteams:
-        data += "TRUE"
-    else:
-        data += "FALSE"
-    data += "\n"
+print("Getting einstein team list")
+einsteinteams = []
+for cmp in cmps:
+    einsteinteams += tba.event_teams("{yr}cmp{st}".format(yr=YEAR, st=cmp), keys=True) 
 
-print("Writing file")
+print("Building data")
+data = "Team,Division,Einstein\n"
+for team in teamlist:
+    try:
+        div = teamDivs[team]
+    except KeyError:
+        div = "NA"
+
+    data += f"{team[3:]},{div},{team in einsteinteams}\n"
+
+print("Writing data")
 with open(FILENAME, 'w', encoding='utf-8') as f:
     f.write(data)
 
-print("Found {0} teams".format(len(divteams)))
-print("Wrote data to {0}".format(FILENAME))
+print(f"Found {len(teamlist)} teams")
+print(f"Wrote data to {FILENAME}")
