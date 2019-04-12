@@ -25,14 +25,13 @@ s, tba, _, _ = lib.init()
 
 
 def get_header(rank):
-    data = ""
-    data += 'Rank,Team,'
+    data = "Rank,Team,"
     data += ','.join(map(lambda p : p['name'], rank['sort_order_info']))
 
-    if YEAR == "2018":
+    if int(YEAR) >= 2018:
         data += ",Null"
 
-    data += ',W,L,T,OPR,DPR,CCWM\n'
+    data += ",W,L,T,OPR,DPR,CCWM\n"
     return data
 
 
@@ -40,30 +39,32 @@ print("Retrieving data")
 rank = tba.event_rankings(EVENT_KEY)
 oprs = tba.event_oprs(EVENT_KEY)
 
+print("Building data")
+data = get_header(rank)
+
+for i,team in enumerate(rank.rankings):
+    team_key = team['team_key']
+
+    row = [
+        team['rank'],
+        team_key[3:],
+
+    ] + team['sort_orders'] + [
+
+        team['record']['wins'],
+        team['record']['losses'],
+        team['record']['ties'],
+
+        oprs['oprs'][team_key],
+        oprs['dprs'][team_key],
+        oprs['ccwms'][team_key]
+    ]
+
+    data += ','.join(map(str,row))
+    data += "\n"
+
 print("Writing file")
 with open(FILENAME, 'w') as f:
-    f.write(get_header(rank))
-
-    data = ""
-
-    for i in range(len(rank.rankings)):
-        team = rank.rankings[i]
-        team_key = team['team_key']
-        
-        data += str(team['rank']) + ','
-        data += str(team_key[3:]) + ','
-        data += ','.join(map(str, team['sort_orders'])) + ','
-
-        data += str(team['record']['wins']) + ','
-        data += str(team['record']['losses']) + ','
-        data += str(team['record']['ties']) + ','
-
-        data += str(oprs['oprs'][team_key]) + ','
-        data += str(oprs['dprs'][team_key]) + ','
-        data += str(oprs['ccwms'][team_key]) + ','
-
-        data += "\n"
-
     f.write(data)
 
 print("Wrote data to {0}".format(FILENAME))
