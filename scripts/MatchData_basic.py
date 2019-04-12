@@ -54,21 +54,21 @@ for match in matchlist:
                 YEAR,
                 match.event_key[4:],
                 match.comp_level,
-                str(match.set_number),
-                str(match.match_number),
-                str(lib.get_week(event.start_date)),
-                str(event.city),
-                str(event.state_prov),
-                str(event.country),
+                match.set_number,
+                match.match_number,
+                lib.get_week(event.start_date),
+                event.city,
+                event.state_prov,
+                event.country,
                 lib.get_from_timestamp(match.time),
                 team[3:],
                 alliance,
-                str(robotnumber),
-                str(match.alliances[alliance]['score']),
+                robotnumber,
+                match.alliances[alliance]['score'],
                 lib.get_full_result(match, alliance)
             ]
 
-            data += ','.join(row)
+            data += ','.join(map(str,row))
             data += '\n'
 
             robotnumber += 1 # Increment robot number to move on to next team in alliance
