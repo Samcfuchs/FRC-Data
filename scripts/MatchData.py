@@ -1,64 +1,110 @@
+
 import sys
 import lib
+from datetime import date, datetime
 
 # Get year
 try:
-    YEAR = sys.argv[1]
+    YEAR = str(sys.argv[1])
 except IndexError:
-    #YEAR = 2018
-    YEAR = input("Year (e.g. 2018): ")
+    YEAR = "2018"
+    #YEAR = str(input("Year (e.g. 2018): "))
 
-YEAR = str(YEAR)
-FILENAME = 'data/{}_MatchData.csv'.format(YEAR)
+try:
+    simple = int(sys.argv[2]) == 0
+except IndexError:
+    simple = int(YEAR) <= 2014
 
-s = lib.init()
+suffix = ""
+if simple:
+    suffix = "_basic"
+
+FILENAME = f"data/{YEAR}_MatchData{suffix}.csv"
+
+s, tba,_,_ = lib.init()
 
 # define trim_score_breakdown
 if int(YEAR) <= 2014:
     trim_score_breakdown = lib.breakdown_trimmers['2014']
-    headers = lib.headers['2014']
+    headers = lib.standard_headers
 else:
     trim_score_breakdown = lib.breakdown_trimmers[YEAR]
-    headers = lib.headers[YEAR]
-
+    headers = lib.standard_headers
+    if not simple:
+        headers = lib.standard_headers + lib.headers[YEAR]
 
 print("Getting TBA data")
-matches, eventDetails = lib.get_data(YEAR)
+event_types = list(range(0,7))
+events = tba.events(int(YEAR), simple=True)
+events = [event for event in events if event.event_type in event_types]
 
-if int(YEAR) > 2014:
-    print("Removing bad matches")
-    matches = lib.remove_empty_matches(matches)
+# Get matches
+matches = [tba.event_matches(event.key, simple=simple) for event in events]
+matches = [match for event in matches for match in event]
 
-print("Imported {n} matches".format(n=len(matches)))
+# Make events indexable
+events = {e.key: e for e in events}
 
-print("Writing file")
-f = open(FILENAME, 'w', encoding='utf-8')
+if not simple:
+    matches = [match for match in matches if match.score_breakdown is not None]
 
-print("Writing header")
-f.write(','.join(headers) + "\n")
+print(f"Imported {len(matches)} matches")
 
-print("Writing data")
+print("Building data")
+data = ','.join(headers) + '\n'
+
+standard_headers = ["Key","Year","Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
+def get_context(match, event):
+    try:
+        matchtime = datetime.fromtimestamp(match.actual_time)
+        time_str = matchtime.isoformat(sep=' ')
+    except TypeError:
+        time_str = "null"
+
+    data = [
+        match.key,
+        event.key[:4],
+        event.event_code,
+        lib.get_week(event.start_date),
+        event.city,
+        event.state_prov,
+        event.country,
+        time_str,
+        match.comp_level,
+        match.set_number,
+        match.match_number
+    ]
+
+    return data
+
+
 for match in matches:
-    for alliance in match['alliances']:
+    context = ','.join(map(str,get_context(match, events[match.event_key])))
+    for alliance in match.alliances:
         robotnumber = 1
         for team in match['alliances'][alliance]['team_keys']:
-            f.write(lib.get_event_data(match, eventDetails))
+            # Event & Match context
+            data += context + ','
 
-            # Team/alliance stuff
-            f.write(team[3:] + ',')
-            f.write(alliance + ',')
-            f.write(str(robotnumber) + ',')
+            # Team context
+            data += f"{team[3:]},"
+            data += f"{alliance},"
+            data += f"{robotnumber},"
 
-            if int(YEAR) > 2014:
-                bd = trim_score_breakdown(robotnumber, match['score_breakdown'][alliance])
-                f.write(','.join(map(str, bd.values())) + ',')
+            data += f"{lib.get_result(match,alliance)},"
+            data += f"{lib.get_win_margin(match,alliance)},"
 
-            # Record results for this team
-            f.write(lib.get_full_result(match,alliance))
+            if not simple:
+                bd = trim_score_breakdown(robotnumber, match.score_breakdown[alliance])
+                data += ','.join(map(str, bd.values()))
+            
+            data += '\n'
+            
+            robotnumber += 1
 
-            f.write("\n")
 
-            robotnumber += 1 # Increment robot number to move on to next team in alliance
 
-f.close()
-print("Wrote data to {fname}".format(fname=FILENAME))
+with open(FILENAME, 'w', encoding='utf-8') as f:
+    f.write(data)
+
+print(f"Wrote data to {FILENAME}")

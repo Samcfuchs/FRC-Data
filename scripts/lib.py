@@ -58,7 +58,7 @@ def get_data(year, preseason=False):
     event_types = list(range(0,7))
     if preseason:
         event_types += [100]
-    r = s.get(TBA_BASE + '/events/{0}/simple'.format(year))
+    r = s.get(TBA_BASE + f"/events/{year}/simple")
     events = r.json() # Get json version of match data
     matchlist = []
     eventDetails = {}
@@ -164,6 +164,7 @@ def get_event_data(match, event_details):
 
     for field in ['city', 'state_prov', 'country']:
         data += event_details[eventKey][field] + ','
+
     try:
         matchTime = datetime.fromtimestamp(int(match['actual_time'])) 
         data += matchTime.isoformat(sep=' ') + ','
@@ -176,6 +177,8 @@ def get_event_data(match, event_details):
 
 def remove_empty_matches(matches, doprint=True):
     """ Return the list of matches but without any that lack a score breakdown """
+    return [match for match in matches if match['score_breakdown'] is not None]
+    """
     good=[]
     for match in matches:
         if match['score_breakdown'] != None:
@@ -184,6 +187,7 @@ def remove_empty_matches(matches, doprint=True):
             if doprint:
                 print("  Removed {}".format(match['key']))
     return good
+    """
 
 def flatten_array(arr):
     """ Flatten a 2-dimensional array to one dimension """
@@ -233,7 +237,8 @@ def get_full_result(match, alliance):
     return get_result(match, alliance) + "," + str(get_win_margin(match, alliance))
 
 #### MATCHDATA YEARLY FUNCTIONS ####
-standard_headers = ["Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
+standard_headers = ["Key","Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
+standard_headers = ["Key","Year","Event","Week","City","State","Country","Time","Competition Level","Set Number","Match Number","Team","Alliance","Robot Number","result","winMargin"]
 end_headers = ["result", "winMargin"]
 
 breakdown_2014 = []
@@ -244,12 +249,12 @@ breakdown_2018 = ["adjustPoints","autoOwnershipPoints","autoPoints","autoQuestRa
 breakdown_2019 = ['adjustPoints', 'autoPoints', 'bay1', 'bay2', 'bay3', 'bay4', 'bay5', 'bay6', 'bay7', 'bay8', 'cargoPoints', 'completeRocketRankingPoint', 'completedRocketFar', 'completedRocketNear', 'endgame', 'foulCount', 'foulPoints', 'habClimbPoints', 'habDockingRankingPoint', 'habLine', 'hatchPanelPoints', 'lowLeftRocketFar', 'lowLeftRocketNear', 'lowRightRocketFar', 'lowRightRocketNear', 'midLeftRocketFar', 'midLeftRocketNear', 'midRightRocketFar', 'midRightRocketNear', 'preMatchBay1', 'preMatchBay2', 'preMatchBay3', 'preMatchBay6', 'preMatchBay7', 'preMatchBay8', 'preMatchLevel', 'rp', 'sandStormBonusPoints', 'techFoulCount', 'teleopPoints', 'topLeftRocketFar', 'topLeftRocketNear', 'topRightRocketFar', 'topRightRocketNear', 'totalPoints']
 
 headers = {
-    "2014": standard_headers + breakdown_2014 + end_headers,
-    "2015": standard_headers + breakdown_2015 + end_headers,
-    "2016": standard_headers + breakdown_2016 + end_headers,
-    "2017": standard_headers + breakdown_2017 + end_headers,
-    "2018": standard_headers + breakdown_2018 + end_headers,
-    "2019": standard_headers + breakdown_2019 + end_headers,
+    "2014": breakdown_2014,
+    "2015": breakdown_2015,
+    "2016": breakdown_2016,
+    "2017": breakdown_2017,
+    "2018": breakdown_2018,
+    "2019": breakdown_2019,
 }
 
 def calculate_score_2019(result):
