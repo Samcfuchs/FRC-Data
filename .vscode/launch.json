@@ -17,12 +17,21 @@
             "request": "launch",
             "program": "${file}",
             "console": "externalTerminal"
-        }
+        },
         {
             "name": "MatchData.py",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/scripts/MatchData.py",
+            "args": ["2019"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "EventRanking.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/EventRanking.py",
+            "args": ["2018cthar"],
             "console": "integratedTerminal"
         },
     ]
