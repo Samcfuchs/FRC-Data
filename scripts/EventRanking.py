@@ -1,6 +1,5 @@
-import sys
 import lib
-import tbapy
+import argparse
 
 """
 Generates the current ranking table for the given event
@@ -8,15 +7,17 @@ Uses TBA's definitions of field titles, so this should work generically for
 any year.
 """
 
-try:
-    EVENT_KEY = sys.argv[1]
-except IndexError:
-    EVENT_KEY = input("Event key (e.g. 2018cthar): ")
+parser = argparse.ArgumentParser(description="Get the ranking table for an event.")
+parser.add_argument('event', metavar='E', type=str, help="Event key (example: 2019cthar)")
+parser.add_argument('-f','--file', type=str, help="Filename (default: Ranking_eventkey.csv)")
 
-YEAR = EVENT_KEY[:4]
-if int(YEAR) < 2007:
-    raise ValueError("Only valid for 2007 onward")
-FILENAME = "data/Ranking_" + EVENT_KEY + ".csv"
+args = parser.parse_args()
+if args.file is None:
+    args.file = "data/Ranking_" + args.event + ".csv"
+
+EVENT_KEY = args.event
+YEAR = args.event[:4]
+FILENAME = args.file
 
 s, tba, _, _ = lib.init()
 
