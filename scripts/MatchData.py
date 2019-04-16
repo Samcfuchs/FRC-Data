@@ -1,25 +1,23 @@
 
-import sys
 import lib
 from datetime import date, datetime
+import argparse
 
-# Get year
-try:
-    YEAR = str(sys.argv[1])
-except IndexError:
-    YEAR = "2018"
-    #YEAR = str(input("Year (e.g. 2018): "))
+parser = argparse.ArgumentParser(description="Get detailed match data.")
+parser.add_argument('year', metavar='Y',type=str,
+    help="Year to fetch data for")
+parser.add_argument('-s','--simple', action='store_true', 
+    help="Write only basic match data (omit score breakdowns).")
+parser.add_argument('-f','--file',type=str,
+    help="A filename to write to")
 
-try:
-    simple = int(sys.argv[2]) == 0
-except IndexError:
-    simple = int(YEAR) <= 2014
+args = parser.parse_args()
+if args.file is None:
+    args.file = f"data/{args.year}_MatchData{'_basic' if args.simple else ''}.csv"
 
-suffix = ""
-if simple:
-    suffix = "_basic"
-
-FILENAME = f"data/{YEAR}_MatchData{suffix}.csv"
+YEAR = args.year
+simple = args.simple or (int(args.year) <= 2014)
+FILENAME = args.file
 
 s, tba,_,_ = lib.init()
 
@@ -45,6 +43,7 @@ matches = [match for event in matches for match in event]
 # Make events indexable
 events = {e.key: e for e in events}
 
+# Filter matches without score breakdowns
 if not simple:
     matches = [match for match in matches if match.score_breakdown is not None]
 
