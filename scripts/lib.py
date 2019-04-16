@@ -53,48 +53,6 @@ def init():
 
     return session, tba, has_tba, has_google
 
-def get_data(year, preseason=False):
-    """ Get match and event data for all regular-season events """
-    event_types = list(range(0,7))
-    if preseason:
-        event_types += [100]
-    r = s.get(TBA_BASE + f"/events/{year}/simple")
-    events = r.json() # Get json version of match data
-    matchlist = []
-    eventDetails = {}
-    for event in events:
-        # Throw out off/preseasons
-        if event['event_type'] not in event_types:
-            continue
-        r = s.get(TBA_BASE + '/event/' + event['key'] + '/matches')
-        eventdata = r.json()
-        matchlist.append(eventdata)
-        # Log event details to register
-        eventDetails[event['key']] = get_event_details(event['key'])
-    
-    print("Flattening list")
-    matches = flatten_array(matchlist)
-    return matches, eventDetails
-
-def get_team_data(year, append='', doprint=True):
-    """ Get data for every team that competed in the given year """
-    data = []
-    page = 0
-    while True:
-        if doprint:
-            print("Page {0} loaded".format(page))
-        if year == 0:
-            r = s.get("{0}/teams/{p}{app}".format(TBA_BASE, p=page, app=append))
-        else:
-            r = s.get("{0}/teams/{yr}/{p}{app}".format(TBA_BASE, yr=year, p=page, app=append))
-
-        # Stop loading when we get served an empty page
-        if len(r.json()) == 0:
-            break
-        data += r.json()
-        page += 1
-    return data
-
 
 def is_team_historic(team):
     """ Determine whether a SimpleTeam object represents a historic team """
@@ -104,19 +62,6 @@ def is_team_historic(team):
         return True
     return False
 
-# Generate a dictionary of the details of the event
-def get_event_details(key):
-    """ Generate a dictionary of relevant event information """
-    details = {}
-    r = s.get(TBA_BASE + '/event/' + key + '/simple')
-    json = r.json()
-    details['city'] = "\"" + json['city'] + "\""
-    details['state_prov'] = "\"" + json['state_prov'] + "\""
-    details['country'] = "\"" + json['country'] + "\""
-    details['location'] = "\"" + json['city'] + ', ' + json['state_prov'] + ', ' + json['country'] + "\""
-    matchDate = datetime.strptime(json['start_date'], "%Y-%m-%d").date()
-    details['week'] = get_week(matchDate)
-    return details
 
 # The zero-day is used to determine the week number of an event
 # Typically it's placed 8 days before the first week 1 event day
@@ -145,73 +90,6 @@ def get_week(date):
     delta = date - zero_day
     return int(delta.days / 7)
 
-def get_from_timestamp(t: int):
-    try:
-        time = datetime.fromtimestamp(t)
-        return time.isoformat(sep=' ')
-    except TypeError:
-        return "null"
-
-def get_event_data(match, event_details):
-    """ Return event data as a comma-sep string, as well as the match time and number """
-    data = ""
-    matchkey = match['key']
-    # Event/match stuff
-    # Match key example: "2018cmpmi_qm30"
-    eventKey = matchkey.split('_')[0] # Get event portion
-    data += eventKey[4:] + ','
-    data += str(event_details[eventKey]['week']) + ','
-
-    for field in ['city', 'state_prov', 'country']:
-        data += event_details[eventKey][field] + ','
-
-    try:
-        matchTime = datetime.fromtimestamp(int(match['actual_time'])) 
-        data += matchTime.isoformat(sep=' ') + ','
-    except TypeError:
-        #print("{0}: Missing timestamp".format(match['key']))
-        data += "null,"
-    data += match['key'].split('_')[1] + ','
-    data += match['comp_level'] + ','
-    return data
-
-def remove_empty_matches(matches, doprint=True):
-    """ Return the list of matches but without any that lack a score breakdown """
-    return [match for match in matches if match['score_breakdown'] is not None]
-    """
-    good=[]
-    for match in matches:
-        if match['score_breakdown'] != None:
-            good.append(match)
-        else:
-            if doprint:
-                print("  Removed {}".format(match['key']))
-    return good
-    """
-
-def flatten_array(arr):
-    """ Flatten a 2-dimensional array to one dimension """
-    return [element for sublist in arr for element in sublist]
-
-def write_event_data(f, match, event_details):
-    """ Write event data to the provided file, as well as the match time and number """
-    matchkey = match['key']
-    # Event/match stuff
-    # Match key example: "2018cmpmi_qm30"
-    eventKey = matchkey.split('_')[0] # Get event portion
-    f.write(eventKey[4:] + ',') # cut off the year
-    f.write(str(event_details[eventKey]['week']) + ',') # Week
-
-    for field in ['city', 'state_prov', 'country']:
-        f.write(event_details[eventKey][field] + ',')
-    try:
-        matchTime = datetime.fromtimestamp(int(match['actual_time'])) 
-        f.write(matchTime.isoformat(sep=' ') + ',')
-    except TypeError:
-        #print("{0}: Missing timestamp".format(match['key']))
-        f.write("null,")
-    f.write(match['key'].split('_')[1] + ',') # Match number
-    f.write(match['comp_level'] + ',')
 
 def get_result(match, alliance):
     """ Determine whether this alliance won the match """
@@ -220,6 +98,7 @@ def get_result(match, alliance):
     if match['winning_alliance'] == '':
         return 'T'
     return 'L'
+
 
 def get_win_margin(match, alliance):
     if alliance == 'blue':
@@ -232,14 +111,9 @@ def get_win_margin(match, alliance):
 
     return ourScore - oppScore
 
-def get_full_result(match, alliance):
-    """ Returns full results, both result and margin: "W,132" """
-    return get_result(match, alliance) + "," + str(get_win_margin(match, alliance))
 
 #### MATCHDATA YEARLY FUNCTIONS ####
-standard_headers = ["Key","Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
 standard_headers = ["Key","Year","Event","Week","City","State","Country","Time","Competition Level","Set Number","Match Number","Team","Alliance","Robot Number","result","winMargin"]
-end_headers = ["result", "winMargin"]
 
 breakdown_2014 = []
 breakdown_2015 = ["adjust_points","container_count_level1","container_count_level2","container_count_level3","container_count_level4","container_count_level5","container_count_level6","container_points","container_set","foul_count","foul_points","litter_count_container","litter_count_landfill","litter_count_unprocessed","litter_points","robot_set","teleop_points","total_points","tote_count_far","tote_count_near","tote_points","tote_set","tote_stack"]
