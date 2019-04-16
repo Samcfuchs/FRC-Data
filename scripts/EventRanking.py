@@ -1,6 +1,3 @@
-import requests
-from datetime import date, datetime
-import time
 import sys
 import lib
 import tbapy
@@ -67,4 +64,4 @@ print("Writing file")
 with open(FILENAME, 'w') as f:
     f.write(data)
 
-print("Wrote data to {0}".format(FILENAME))
+print(f"Wrote data to {FILENAME}")

@@ -1,6 +1,3 @@
-import requests
-from datetime import date, datetime
-import time
 # Make sure you set your API key first
 import lib
 s, tba, has_tba, has_google = lib.init()
