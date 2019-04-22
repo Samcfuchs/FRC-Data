@@ -66,6 +66,10 @@ def is_team_historic(team):
 # The zero-day is used to determine the week number of an event
 # Typically it's placed 8 days before the first week 1 event day
 zero_days = {
+    "2001": date(2001, 2, 21),
+    "2002": date(2002, 2, 27),
+    "2003": date(2003, 2, 26),
+    "2004": date(2004, 2, 25),
     "2005": date(2005, 2, 23),
     "2006": date(2006, 2, 22),
     "2007": date(2007, 2, 21),
