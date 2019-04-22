@@ -1,4 +1,5 @@
 #%%
+# Import and process data
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,12 +20,31 @@ data["panelsScored"] = data["hatchPanelPoints"] / 2
 data['Team'] = list(map(str,data.Team))
 
 data.head(6)
+print(len(data))
 list(data)
 #teams = pd.read_csv("../data/TeamInfo.csv")
 
 #%%
+# Stratify data by teams
+data_team = {}
+for i, row in data.iterrows():
+    team = row.Team
+
+    try:
+        data_team[team].append(row)
+    except KeyError:
+        data_team[team] = []
+        data_team[team].append(row)
+#%%
+# Convert team records to dataframes
+#for t in data_team:
+#    data_team[t] = pd.DataFrame(data_team[t])
+
+data_team = {t: pd.DataFrame(data_team[t]) for t in data_team}
+
+#%%
 team = '236'
-week = 2
+week = 6
 
 fig, (ax1,ax2) = plt.subplots(2,1, figsize=(10,10))
 shade = False
@@ -62,3 +82,46 @@ ax2.legend(["Cargo Scored", "Panels Scored",
 )
 fig.savefig("distribution2.png")
 fig.show()
+
+#%%
+team = "236"
+def getTeamData(team, filt=lambda df: df):
+    df = filt(data_team[team])
+    return {
+        "Team": team, 
+        "avgCargo": df.cargoScored.mean(), 
+        "avgPanels": df.panelsScored.mean()
+    }
+
+f = lambda df: df.loc[df.Week > 3,:]
+
+teamdata_l = [getTeamData(t,f) for t in data_team]
+
+teamdata = pd.DataFrame(teamdata_l)
+
+df = data_team[team]
+t_cargo = df.loc[df.Week==6,"cargoScored"].mean()
+t_panels = df.loc[df.Week==6,"panelsScored"].mean()
+
+fig, ax = plt.subplots(1,1, figsize=(8,5))
+sns.kdeplot(teamdata.avgCargo, ax=ax, color=cargo_color)
+sns.kdeplot(teamdata.avgPanels, ax=ax, color=panel_color)
+
+fig.suptitle("Average Team-wise Scoring Week > 3")
+
+ax.axvline(t_cargo, color=cargo_color, linestyle='dashed')
+ax.axvline(t_panels, color=panel_color, linestyle='dashed')
+ax.set_xlim(right=14)
+
+fig.savefig("Teamwise_6.png")
+fig.show()
+
+#%%
+# Get tails for density plot
+better_panels = teamdata.loc[teamdata.avgPanels >= t_panels, :]
+better_cargo = teamdata.loc[teamdata.avgCargo >= t_cargo, :]
+print("Tail for cargo: {}".format(len(better_cargo)))
+print("Tail for panels: {}".format(len(better_panels)))
+
+#%%
+print(len(data_team))
