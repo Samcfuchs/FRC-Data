@@ -1,6 +1,4 @@
 {
-    "python.jediEnabled": false,
     "python.linting.pylintEnabled": true,
     "python.envFile": "${workspaceFolder}/project.env",
-    "code-runner.runInTerminal": true
 }
