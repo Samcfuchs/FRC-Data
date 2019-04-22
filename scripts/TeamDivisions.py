@@ -11,7 +11,7 @@ except IndexError:
 
 if int(YEAR) < 2007:
     raise ValueError("Only valid for 2007 onward")
-FILENAME = "data/{}_TeamDivisions_1.csv".format(YEAR)
+FILENAME = "data/{}_TeamDivisions.csv".format(YEAR)
 
 divList = ['carv', 'gal', 'hop', 'new', 'roe', 'tur', 'arc', 'cars', 'cur', 'tes', 'dal', 'dar']
 if YEAR <= 2016:

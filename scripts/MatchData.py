@@ -52,7 +52,6 @@ print(f"Imported {len(matches)} matches")
 print("Building data")
 data = ','.join(headers) + '\n'
 
-standard_headers = ["Key","Year","Event","Week","City","State","Country","Time","Match","Competition Level","Team","Alliance","Robot Number"]
 def get_context(match, event):
     try:
         matchtime = datetime.fromtimestamp(match.actual_time)
