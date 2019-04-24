@@ -79,27 +79,23 @@ def get_context(match, event):
 for match in matches:
     context = ','.join(map(str,get_context(match, events[match.event_key])))
     for alliance in match.alliances:
-        robotnumber = 1
-        for team in match['alliances'][alliance]['team_keys']:
+        for robotnumber,team in enumerate(match['alliances'][alliance]['team_keys']):
             # Event & Match context
             data += context + ','
 
             # Team context
             data += f"{team[3:]},"
             data += f"{alliance},"
-            data += f"{robotnumber},"
+            data += f"{1+robotnumber},"
 
             data += f"{lib.get_result(match,alliance)},"
             data += f"{lib.get_win_margin(match,alliance)},"
 
             if not simple:
-                bd = trim_score_breakdown(robotnumber, match.score_breakdown[alliance])
+                bd = trim_score_breakdown(1+robotnumber, match.score_breakdown[alliance])
                 data += ','.join(map(str, bd.values()))
             
             data += '\n'
-            
-            robotnumber += 1
-
 
 
 with open(FILENAME, 'w', encoding='utf-8') as f:
