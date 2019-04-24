@@ -27,6 +27,14 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "MatchData_oneline.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/MatchData_oneline.py",
+            "args": ["2007"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "EventRanking.py",
             "type": "python",
             "request": "launch",
