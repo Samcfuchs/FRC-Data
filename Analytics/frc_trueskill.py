@@ -39,11 +39,6 @@ class TSModel:
         return self.table.loc[team,:]
     
 
-    def empty_ratings(self):
-        """ Assign default ratings to all teams """
-        self.table.Rating = [ts.Rating()]*len(self.table)
-    
-
     def train(self, row):
         """ Train the model on a single match record """
         r_blue = list(self.table.loc[row.blue, 'Rating'])
