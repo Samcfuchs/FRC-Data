@@ -231,6 +231,11 @@ matches.apply(process, axis=1)
 end = time.time()
 print(end - start)
 
+#%%
+import pickle
+#pickle.dump(teams, open("elos.p", 'wb'))
+teams = pickle.load( open("elos.p", 'rb') )
+
 #%% [markdown]
 # # Interpreting Elo scores
 # Immediately, we can begin by using these calculated Elo scores to build a
@@ -291,12 +296,34 @@ sns.kdeplot(teams.elo, shade=True)
 # the table, I'm making the executive decision to ignore this.
 
 #%%
-P_alliance([1323,973,5026],[3310,254,6986])
+blue = [1323,973,5026]
+red = [3310,254,6986]
+P_alliance(blue, red)
 
 #%% [markdown]
 # Our model gives the red alliance a 55% chance of winning the match. Of course
 # we know in retrospect that the blue alliance pulled out an upset, but it's
 # impressive to see a meaningful prediction of match outcome.
+
+#%% [markdown]
+# # Broader Predictions
+# We can then extend the idea of match predictions.
+
+#%%
+# Get Darwin elo ranking
+import os
+import tbapy
+
+tba = tbapy.TBA(os.environ['TBA_API_KEY'])
+event = "2019cur"
+
+event_teams = tba.event_teams(event, keys=True)
+event_teams = map(lambda t: t[3:], event_teams)
+event_teams = map(int, event_teams)
+
+ranking = teams.loc[event_teams,:]
+
+ranking['rank'] = ranking.elo.rank(ascending=False)
 
 #%% [markdown]
 # # Toward the future
