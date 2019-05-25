@@ -16,10 +16,8 @@ authorization keys. You can get a TBA key
 google's geocoder API to get geographic coordinates for each team. Learn more
 about the geocoding API and get a key
 [here](https://developers.google.com/maps/documentation/geocoding/get-api-key).
-Once you have authorization keys, add them to the `keys.txt` file like so:
-
-    TBA_AUTH_KEY: "MWx1TOGHBXq9z6MLwBBZaMLmpjHtq9N8SNSM1uRGth6NcwgwGPlzBmTrh0aXjtTM"
-    GOOGLE_AUTH_KEY: "CoUnNf9rjohalGRkp2SJ-MLs861u3T7CUhW3ZD0"
+Once you have authorization keys, add them to your environment variables as
+`TBA_API_KEY` and `GOOGLE_API_KEY` respectively.
 
 ## Analytics
 

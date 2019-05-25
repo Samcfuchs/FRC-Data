@@ -30,12 +30,30 @@ def get_keys():
     return (tba_key, google_key)
 
 
+def get_keys_env():
+    print("Loading API keys")
+
+    tba_key = ""
+    google_key = ""
+
+    try:
+        tba_key = os.environ["TBA_API_KEY"]
+    except KeyError:
+        print("Missing TBA key")
+
+    try:
+        google_key = os.environ["GOOGLE_API_KEY"]
+    except KeyError:
+        print("Missing Google key")
+
+    return (tba_key, google_key)
+
 s = None
 TBA_BASE = "https://www.thebluealliance.com/api/v3"
 
 def init():
     # Get keys
-    TBA_KEY, GOOGLE_KEY = get_keys()
+    TBA_KEY, GOOGLE_KEY = get_keys_env()
 
     # Store google key
     os.environ["GOOGLE_API_KEY"] = GOOGLE_KEY
