@@ -6,9 +6,8 @@ All data is written to files in the `data` folder.
 
 ## Installation
 
-Parts of this library use Erik Boesen's [tbapy](http://github.com/frc1418/tbapy)
-library. You'll need to install it with `pip install tbapy` in order for those
-scripts to work. For TeamInfo.py, you'll also need to `pip install geocoder`.
+Use `pip install -r requirements.txt` to install all required packages for this
+project.
 
 In order to use the APIs these scripts access, you'll need to obtain
 authorization keys. You can get a TBA key
