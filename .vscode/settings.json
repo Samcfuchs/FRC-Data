@@ -2,4 +2,5 @@
     "python.linting.pylintEnabled": true,
     "python.envFile": "${workspaceFolder}/project.env",
     "python.pythonPath": "env\\Scripts\\python.exe",
+    "python.dataScience.notebookFileRoot": "${workspaceFolder}/Analytics/",
 }
