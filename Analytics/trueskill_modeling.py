@@ -99,10 +99,12 @@ data.head()
 #%%
 # Sort matches in order they occurred
 comp_level_f = { 'qm':0, 'qf':1, 'sf':2, 'f':3 }
+event_f = lambda k: 1 if k[:3] == 'cmp' else 0
 data['comp_level_n'] = data.comp_level.map(comp_level_f)
-data.sort_values(['Week','Event','comp_level_n','set','match'], inplace=True)
+data['event_n'] = data.Event.map(event_f)
+data.sort_values(['Week','event_n','Event','comp_level_n','set','match'], inplace=True)
 data.reset_index(inplace=True, drop=True)
-data.drop('comp_level_n', axis=1, inplace=True)
+data.drop(['event_n','comp_level_n'], axis=1, inplace=True)
 data.head(10)
 
 #%%
