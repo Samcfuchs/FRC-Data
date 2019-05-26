@@ -39,11 +39,6 @@ class TSModel:
         return ts.Rating(mu, sigma)
 
     
-    def rating(self, team):
-        """ Get the specific rating for a team """
-        return self.table.loc[team,:]
-    
-
     def train(self, row):
         """ Train the model on a single match record """
         r_blue = list(self.table.loc[row.blue, 'Rating'])
