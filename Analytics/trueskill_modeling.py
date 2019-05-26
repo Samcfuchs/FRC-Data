@@ -141,7 +141,6 @@ print(f"Training time: {int(time.time() - start)} s")
 #%%
 # Evaluate results
 model.rank()
-model.table.sort_values('Score', ascending=False, inplace=True)
 model.table.head()
 
 #%% [markdown]
