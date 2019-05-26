@@ -9,9 +9,11 @@ import os
 class TSModel:
     tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
-    def __init__(self, teams=[], tie_rate=0.02):
+    def __init__(self, teams=[], tie_rate=0.02, logging=False):
+        self.logging = logging
         self.env = ts.setup(draw_probability=tie_rate)
         self.table = pd.DataFrame(columns=['Team','Rating','Score','Rank'])
+        self.log = {'Key':[], 'Prediction':[]}
 
         self.table.Team = teams
         self.table.Rating = [ts.Rating()] * len(self.table)
@@ -24,6 +26,7 @@ class TSModel:
         csv['Rating'] = rating
         csv.set_index('Team', inplace=True)
         self.table = csv.drop(['mu','sigma'], axis=1)
+
 
     def rate(self, team):
         """ Get the ranking information for a team or list of teams """
@@ -43,6 +46,10 @@ class TSModel:
         """ Train the model on a single match record """
         r_blue = list(self.table.loc[row.blue, 'Rating'])
         r_red = list(self.table.loc[row.red, 'Rating'])
+
+        if self.logging:
+            self.log['Key'].append(row.Key)
+            self.log['Prediction'].append(self.predict(row.blue, row.red))
 
         result = { 'blue':1, 'red':1 }
         if row.winner != 'tie':
