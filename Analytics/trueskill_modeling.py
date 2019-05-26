@@ -151,7 +151,7 @@ model.table.head()
 # Visual
 sns.kdeplot(model.table.Score, shade=True)
 
-#%%
+#%% [markdown]
 # One of the most powerful abilities this model brings to the table is
 # predicting the outcomes of matches based on the competitors, as demonstrated
 # below. Note that this works best with a well-trained model, so it's not very
@@ -175,7 +175,7 @@ print(f"Red: {m_teams[1]}")
 print(f"Blue win probability: {model.predict(m_teams[0],m_teams[1]):.3%}")
 print(f"Match quality: {model.quality(m_teams[0],m_teams[1]):.3}")
 
-#%%
+#%% [markdown]
 # In the same way that we can rate a team's skill, we can use the team's skill
 # to calculate the skill of an alliance. Note that the rating for an alliance is
 # usually negative. This is because while we average the mean skills of the
