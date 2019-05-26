@@ -62,11 +62,14 @@ def get_teams(years):
 
 #%%
 # Multi-year simulation
-years = range(2005,2006)
+years = range(2007, 2020)
 teams = get_teams(years)
-model = TSModel(teams)
+model = TSModel(teams, logging=True)
 
+print(f"Training on {','.join(map(str, years))}")
+print('='*35)
 start = time.time()
+
 for year in years:
     filename = f"../data/{year}_MatchData_ol.csv"
     data = pd.read_csv(filename)
