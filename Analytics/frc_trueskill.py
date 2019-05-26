@@ -15,8 +15,15 @@ class TSModel:
 
         self.table.Team = teams
         self.table.Rating = [ts.Rating()] * len(self.table)
-        self.table.set_index('Team',inplace=True)
+        self.table.set_index('Team', inplace=True)
 
+
+    def load(self, filename):
+        csv = pd.read_csv(filename)
+        rating = list(map(ts.Rating, zip(csv.mu, csv.sigma)))
+        csv['Rating'] = rating
+        csv.set_index('Team', inplace=True)
+        self.table = csv.drop(['mu','sigma'], axis=1)
 
     def rate(self, team):
         """ Get the ranking information for a team or list of teams """
@@ -87,3 +94,20 @@ class TSModel:
         self.score()
         self.table.Rank = self.table.Score.rank(ascending=False)
         self.table.sort_values('Score', ascending=False, inplace=True)
+    
+
+    def export(self, filename:str) -> pd.DataFrame:
+        """ Export model to csv file """
+        columns = ['mu','sigma','Score','Rank']
+
+        self.rank()
+        ratings = map(list, self.table.Rating)
+        ratings_inv = list(zip(*ratings))
+
+        output = self.table.drop('Rating', axis=1)
+        output['mu'] = ratings_inv[0]
+        output['sigma'] = ratings_inv[1]
+
+        output.to_csv(filename, columns=columns)
+
+        return output
