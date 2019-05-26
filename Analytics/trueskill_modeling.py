@@ -60,7 +60,7 @@ import seaborn as sns; sns.set(color_codes=True)
 import matplotlib.pyplot as plt
 
 YEAR = 2019
-FILE = f"data/{YEAR}_MatchData_ol.csv"
+FILE = f"../data/{YEAR}_MatchData_ol.csv"
 tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
 #%% [markdown]
