@@ -29,6 +29,7 @@ def process_data(df):
     df.drop(['City','State','Country','Time'], axis=1, inplace=True)
 
     # Data processing
+    
     df['blue'] = list(zip(df.blue1, df.blue2, df.blue3))
     df['red'] = list(zip(df.red1, df.red2, df.red3))
     df.drop(['blue1','blue2','blue3','red1','red2','red3'], axis=1, inplace=True)
@@ -58,29 +59,6 @@ def get_teams(years):
         teams.update([int(key[3:]) for key in tba.teams(year=year, keys=True)])
     
     return list(teams)
-
-#%%
-# Import data
-year = 2005
-filename = f"../data/{year}_MatchData_ol.csv"
-
-data = pd.read_csv(filename)
-
-data = process_data(data)
-data = sort_data(data)
-
-#%%
-# Get team list
-teams = get_teams([year])
-
-model = TSModel(teams)
-
-#%%
-# Build model
-
-start = time.time()
-data.apply(model.train, axis=1)
-print(f"Training time: {int(time.time() - start)} s")
 
 #%%
 # Multi-year simulation
