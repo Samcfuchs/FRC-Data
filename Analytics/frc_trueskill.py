@@ -7,11 +7,11 @@ import tbapy
 import os
 
 class TSModel:
-    table = pd.DataFrame(columns=['Team','Rating','Score','Rank'])
     tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
     def __init__(self, teams=[], tie_rate=0.02):
         self.env = ts.setup(draw_probability=tie_rate)
+        self.table = pd.DataFrame(columns=['Team','Rating','Score','Rank'])
 
         self.table.Team = teams
         self.table.Rating = [ts.Rating()] * len(self.table)
