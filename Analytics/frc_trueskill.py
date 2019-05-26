@@ -78,9 +78,12 @@ class TSModel:
         return ts.quality((r_blue,r_red))
     
     def score(self):
-        self.table.Score = list(map(self.env.expose, self.table.Rating))
+        """ Calculate scores for all teams and add into table """
+        self.table.Score = self.table.Rating.map(self.env.expose)
     
 
     def rank(self):
+        """ Score all teams and rank them according to their score """
         self.score()
         self.table.Rank = self.table.Score.rank(ascending=False)
+        self.table.sort_values('Score', ascending=False, inplace=True)
