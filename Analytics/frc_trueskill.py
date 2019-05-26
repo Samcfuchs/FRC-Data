@@ -79,6 +79,14 @@ class TSModel:
         return p_blue_win
     
 
+    def test(self, winner) -> float:
+        """ Get the Brier score of the model on the predictions it logged """
+        winner.fillna('tie')
+        f = { 'blue':1, 'red':0, 'tie':0.5 }
+
+        return ((winner.map(f) - self.log['Prediction'])**2).mean()
+
+
     def quality(self, blue, red) -> float:
         """ Get the generalized quality of a match """
         r_blue = list(self.table.loc[blue, 'Rating'])
@@ -86,6 +94,7 @@ class TSModel:
 
         return ts.quality((r_blue,r_red))
     
+
     def score(self):
         """ Calculate scores for all teams and add into table """
         self.table.Score = self.table.Rating.map(self.env.expose)
