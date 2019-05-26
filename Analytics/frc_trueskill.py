@@ -6,8 +6,6 @@ import math
 import tbapy
 import os
 
-Alliance = Tuple[int, int, int]
-
 class TSModel:
     table = pd.DataFrame(columns=['Team','Rating','Score','Rank'])
     tba = tbapy.TBA(os.environ['TBA_API_KEY'])
@@ -25,7 +23,7 @@ class TSModel:
         return self.table.loc[team,:]
     
 
-    def rate_alliance(self, alliance:Alliance):
+    def rate_alliance(self, alliance:Tuple):
         ratings = list(self.table.loc[alliance, 'Rating'])
 
         mu = sum(r.mu for r in ratings)
@@ -56,7 +54,7 @@ class TSModel:
         return new_blue, new_red
     
 
-    def predict(self, blue:Alliance, red:Alliance) -> float:
+    def predict(self, blue, red) -> float:
         """ Predict the outcome of a match """
         r_blue = list(self.table.loc[blue, 'Rating'])
         r_red = list(self.table.loc[red, 'Rating'])
@@ -72,7 +70,7 @@ class TSModel:
         return p_blue_win
     
 
-    def quality(self, blue:Alliance, red:Alliance) -> float:
+    def quality(self, blue, red) -> float:
         """ Get the generalized quality of a match """
         r_blue = list(self.table.loc[blue, 'Rating'])
         r_red = list(self.table.loc[red, 'Rating'])
