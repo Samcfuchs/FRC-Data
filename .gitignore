@@ -17,8 +17,9 @@ __pycache__/
 *.p
 /env/
 
-#   Distribution
+# Distribution
 build/
 dist/
 
-keys.txt
+Analytics/test\.py
+
