@@ -23,17 +23,22 @@ def process_data(df):
         'Match Number': 'match',
         'Set Number': 'set',
     }
+    team_cols = ['blue1','blue2','blue3','red1','red2','red3']
 
     df.rename(columns=cols_ren, inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    df.drop(['City','State','Country','Time'], axis=1, inplace=True)
 
-    # Data processing
-    
+    df.drop(['City','State','Country','Time'], axis=1, inplace=True)
+    df.winner.fillna('tie', inplace=True)
+    df.dropna(inplace=True)
+    df.red3 = pd.to_numeric(df.red3) # For 2006
+
     df['blue'] = list(zip(df.blue1, df.blue2, df.blue3))
     df['red'] = list(zip(df.red1, df.red2, df.red3))
-    df.drop(['blue1','blue2','blue3','red1','red2','red3'], axis=1, inplace=True)
-    df.winner.fillna('tie', inplace=True)
+    df.drop(team_cols, axis=1, inplace=True)
+
+    df = df.loc[df['blue score'] + df['red score'] > -2,:]
+
+    df.reset_index(drop=True, inplace=True)
 
     return df
 
