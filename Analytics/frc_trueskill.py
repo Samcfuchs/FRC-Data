@@ -33,7 +33,7 @@ class TSModel:
         return self.table.loc[team,:]
     
 
-    def rate_alliance(self, alliance:Tuple):
+    def rate_alliance(self, alliance:Tuple) -> ts.Rating:
         ratings = list(self.table.loc[alliance, 'Rating'])
 
         mu = sum(r.mu for r in ratings)
@@ -61,6 +61,12 @@ class TSModel:
         self.table.loc[row.red, 'Rating'] = new_red
 
         return new_blue, new_red
+    
+
+    def scale_sigma(self, k=2.0):
+        """ Scale the standard deviation of all scores by k """
+        scale = lambda r: ts.Rating(r.mu, k * r.sigma)
+        self.table.Rating = self.table.Rating.map(scale)
     
 
     def predict(self, blue, red) -> float:
