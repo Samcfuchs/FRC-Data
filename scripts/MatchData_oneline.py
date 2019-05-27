@@ -78,7 +78,16 @@ for match in matches:
     row.append(match.alliances['blue']['score'])
     row.append(match.alliances['red']['score'])
 
-    row.append(match.winning_alliance) 
+    if YEAR == '2015':
+        diff = match.alliances['blue']['score'] - match.alliances['red']['score']
+        if diff > 0:
+            row.append('blue')
+        elif diff < 0:
+            row.append('red')
+        else:
+            row.append('')
+    else:
+        row.append(match.winning_alliance) 
 
     data.append(row)
         
