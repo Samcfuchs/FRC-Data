@@ -111,3 +111,23 @@ print(f"Brier score: {model.test(data.winner)}")
 # once again and recording our predictions. Then we find the Brier score of
 # those predictions against the actual results. All of this is handled by the
 # model's `train()` and `test()` methods.
+
+#%%
+YEAR = 2019
+trainedmodel = TSModel(logging=True)
+trainedmodel.load(f"{YEAR-1}_end_ratings.csv")
+
+data = pd.read_csv(f"../data/{YEAR}_MatchData_ol.csv")
+data = process_data(data)
+data = sort_data(data)
+
+print(f"Year: {YEAR}")
+print(f"Simulating {len(data)} matches")
+substart = time.time()
+
+data.apply(trainedmodel.train, axis=1)
+
+print(f"Training time: {int(time.time() - substart)} s")
+print("=" * 35)
+
+print(f"Brier score: {trainedmodel.test(data.winner)}")
