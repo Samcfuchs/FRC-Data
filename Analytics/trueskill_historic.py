@@ -8,7 +8,7 @@ import tbapy
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns; sns.set(color_codes=True)
+import seaborn as sns; sns.set(style='whitegrid', color_codes=True)
 import time
 import pickle
 import os
@@ -159,7 +159,6 @@ x,y = zip(*pairs)
 z = filtered.Score
 t = list(filtered.index)
 
-sns.set(style='whitegrid')
 plt.rcParams['image.cmap'] = 'viridis_r'
 plt.rcParams['font.family'] = 'Segoe UI'
 
