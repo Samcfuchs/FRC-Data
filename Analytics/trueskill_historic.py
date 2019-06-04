@@ -67,7 +67,7 @@ def get_teams(years):
 
 #%%
 # Multi-year simulation
-years = range(2007, 2020)
+years = range(2005, 2020)
 teams = get_teams(years)
 model = TSModel(teams, logging=True)
 
