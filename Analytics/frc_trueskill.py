@@ -51,9 +51,12 @@ class TSModel:
             self.log['Key'].append(row.Key)
             self.log['Prediction'].append(self.predict(row.blue, row.red))
 
-        result = { 'blue':1, 'red':1 }
-        if row.winner != 'tie':
-            result[row.winner] -= 1
+        if row.winner == 'blue':
+            result = [1,0]
+        elif row.winner == 'red':
+            result = [0,1]
+        elif row.winner == 'tie':
+            result = [1,1]
         
         new_blue, new_red = ts.rate([r_blue, r_red], result.values())
 
