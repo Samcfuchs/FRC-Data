@@ -131,3 +131,72 @@ print(f"Training time: {int(time.time() - substart)} s")
 print("=" * 35)
 
 print(f"Brier score: {trainedmodel.test(data.winner)}")
+
+#%% [markdown]
+# We can also assess our model by looking at the distribution of skill across
+# all FRC teams. Here we show the distribution of score for all teams which
+# played matches in 2019.
+
+#%%
+model = TSModel(logging=True)
+model.load("2019_end_ratings.csv")
+sns.kdeplot(model.table.loc[model.table.Score != 0,'Score'])
+plt.show()
+
+#%% [markdown]
+# We can also visualize ratings by graphing the mean ($\mu$) against the
+# standard deviation ($\sigma$) of each team. Interestingly, we see in the lower
+# left that the teams trail off toward the higher $\mu$ values, with low
+# $\sigma$. Upon closer examination, we can see that these teams are all the
+# well-recognized powerhouse teams - in this chart, we actually have a visual
+# representation of the best teams in FRC.
+
+#%%
+# Plot with matplot
+filtered = model.table.loc[model.table.Score != 0]
+pairs = list(map(tuple, filtered.Rating))
+x,y = zip(*pairs)
+z = filtered.Score
+t = list(filtered.index)
+
+sns.set(style='whitegrid')
+plt.rcParams['image.cmap'] = 'viridis_r'
+plt.rcParams['font.family'] = 'Segoe UI'
+
+fig,(ax1,ax2) = plt.subplots(1,2, figsize=(12,8))
+fig.suptitle("Team Ratings")
+
+ax1.scatter(x,y,c=z, alpha=0.3, s=6)
+
+ax1.set_title("All Teams")
+ax1.set_xlabel(r'$\mu$')
+ax1.set_ylabel(r'$\sigma$')
+
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['left'].set_visible(False)
+ax1.spines['bottom'].set_visible(False)
+
+ax2.scatter(x,y,c=z, alpha=1.0, s=50)
+
+ax2.set_title("Powerhouse Tail")
+ax2.set_xlabel(r'$\mu$')
+ax2.set_ylabel(r'$\sigma$')
+
+for i,txt in list(enumerate(t))[:10]:
+    offy=-4
+    if txt == 1678:
+        offy=1
+    elif txt == 118:
+        offy=-9
+    ax2.annotate(txt, (x[i],y[i]),(10,offy), textcoords='offset pixels')
+
+ax2.spines['right'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax2.spines['left'].set_visible(False)
+ax2.spines['bottom'].set_visible(False)
+
+ax2.set_xlim(35,45)
+ax2.set_ylim(1,1.5)
+
+fig.show()
