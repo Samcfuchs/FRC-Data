@@ -58,7 +58,12 @@ class TSModel:
         elif row.winner == 'tie':
             result = [1,1]
         
-        new_blue, new_red = ts.rate([r_blue, r_red], result.values())
+        try:
+            new_blue, new_red = ts.rate([r_blue, r_red], result)
+        except ValueError:
+            print(f"Blue Ratings: {r_blue}")
+            print(f"Red Ratings: {r_red}")
+            print(result)
 
         self.table.loc[row.blue, 'Rating'] = new_blue
         self.table.loc[row.red, 'Rating'] = new_red
