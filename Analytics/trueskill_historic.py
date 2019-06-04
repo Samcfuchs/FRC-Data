@@ -3,7 +3,7 @@
 
 #%%
 # Set up environment
-from frc_trueskill import TSModel
+from models import TSModel
 import tbapy
 import pandas as pd
 import numpy as np
