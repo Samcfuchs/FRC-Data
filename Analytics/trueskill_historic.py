@@ -65,6 +65,13 @@ def get_teams(years):
     
     return list(teams)
 
+#%% [markdown]
+# ## Training the model
+# We can now train the model on a range of years. I've already built the
+# MatchData files for all the relevant years, so we can import them one by one
+# and train the model on the full year of data. To train on the full range of
+# data takes upwards of 20 minutes.
+
 #%%
 # Multi-year simulation
 years = range(2005, 2020)
@@ -93,3 +100,14 @@ for year in years:
     model.export(f"{year}_end_ratings.csv")
 
 print(f"Training time: {int(time.time() - start)} s")
+print(f"Brier score: {model.test(data.winner)}")
+
+#%% [markdown]
+# ## Testing
+# It's important to ensure that our tests are meaningful - particularly, they
+# should mirror the actual use case of our model. In this case, we want to use
+# our fully trained model to predict a match outcome before it happens. To this
+# effect, we test by importing the 2018 model and training it on the 2019 season
+# once again and recording our predictions. Then we find the Brier score of
+# those predictions against the actual results. All of this is handled by the
+# model's `train()` and `test()` methods.
