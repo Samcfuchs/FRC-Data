@@ -136,3 +136,64 @@ class TSModel:
         output.to_csv(filename, columns=columns)
 
         return output
+
+
+class OPRModel:
+
+    def __init__(self):
+        pass
+
+
+    def build_records(self, matchdata):
+        DROPS = ['Year','Event','Week','comp_level','set','match','winner']
+        COLS_REN = {
+            'Key': 'key',
+            'blue score':'score',  'blue':'teams',
+            'red score':'score',   'red':'teams'
+        }
+
+        data = matchdata.drop(DROPS, axis=1)
+
+        blue = data.loc[:,['Key','blue score','blue']]
+        blue['alliance'] = ['blue']*len(blue)
+        blue.rename(columns=COLS_REN, inplace=True)
+        blue.index = blue.index * 2
+
+        red = data.loc[:,['Key','red score','red']]
+        red['alliance'] = ['red']*len(red)
+        red.rename(columns=COLS_REN, inplace=True)
+        red.index = red.index * 2 + 1
+
+        data = pd.concat([blue,red], axis=0).sort_index()
+        data = data[['key','alliance','teams','score']]
+
+        return data
+
+
+    def build_sparse_matrix(self, records):
+        sparse = pd.DataFrame(0, index=np.arange(len(records)), columns=['key','alliance']+teams)
+        sparse['key'] = data['key']
+        sparse['alliance'] = data['alliance']
+
+        def f(row):
+            sparse.loc[(sparse.key==row.key) & (sparse.alliance==row.alliance),row.teams] = 1
+
+        records.apply(f, axis=1)
+        
+        return sparse
+
+
+    def train(self, data):
+        records = self.build_records(data)
+        sparse = self.build_sparse_matrix(records)
+
+        coef = sparse.drop(['key','alliance'], axis=1).to_numpy()
+        self.oprs,_,_,_ = np.linalg.lstsq(coef, data.score, rcond=None)
+        self.oprs = pd.DataFrame({'team':teams, 'opr':oprs})
+        self.oprs.sort_values('opr', ascending=False, inplace=True)
+    
+    
+    def predict(self):
+        pass
+    
+
