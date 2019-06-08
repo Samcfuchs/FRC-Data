@@ -1,0 +1,92 @@
+/* Add your CSS styles here! */
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#content {
+  margin:auto;
+  width: 1000px;
+  margin-bottom: 15px;
+}
+
+#sub {
+  font-size: 16px;
+  color: #888;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  font-weight: unset;
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom:0;
+}
+
+svg {
+  background-color: #eee;
+  display:block;
+  margin: auto;
+}
+
+text {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+div.viz {
+  width: 800px;
+  margin: auto;
+}
+
+div.bar {
+  vertical-align: middle;
+}
+
+div.bar div {
+  display: inline-block;
+  margin: 0 20px 0 20px;
+}
+
+div.bar span {
+  font-family: 'Inconsolata','Lucida Console', 'Courier New', Courier, monospace; 
+  background-color: #eee;
+  display: inline-block;
+
+  font-size: 25px;
+  height: 40px;
+  width: 70px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+  
+  border-radius: 10px;
+  border: none;
+  margin: 5px 0 5px 0
+}
+
+input {
+  font-family: 'Inconsolata','Lucida Console', 'Courier New', Courier, monospace; 
+  background-color: #eee;
+
+  font-size: 25px;
+  height: 40px;
+  width: 70px;
+  text-align: center;
+  vertical-align: middle;
+
+  border-radius: 10px;
+  border: none;
+  margin: 5px 0 5px 0
+}
+
+input:focus {
+  outline: none;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

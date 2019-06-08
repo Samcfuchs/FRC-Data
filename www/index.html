@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html>
+<meta charset="utf-8">
+<head>
+    <title>TrueSkill Ranking</title>
+    <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+</head>
+
+<body>
+
+<div id='content'>
+    <h1>TrueSkill FRC Predictions</h1>
+    <p id='sub'>Sam Fuchs</p>
+    <p>
+        TrueSkill is a novel ranking system invented by Microsoft for use in
+        conjunction with the Xbox gaming system, to create a standardized way to
+        rank players across a variety of games. It expands on the famous Elo
+        design by representing each player's skill as a normal distribution,
+        with a particular mean and standard deviation for each player.
+        Consequently, where the Elo model uses a simple logistic calculation to
+        determine the win probability (and therefore the amount of points
+        won/lost), the TrueSkill model performs a more complex Bayesian
+        calculation that more accurately represents the outcome of the match.
+        With this model, we can gain a better understanding of the abilities of
+        each team and make better predictions of match outcomes.
+
+        I've trained this model on data from 2005 through 2019 to produce the
+        following ratings, which we visualize by plotting the mean against the
+        standard deviation for each team.
+    </p>
+    <div class='viz'>
+        <div class='bar'>
+            <div>Team: <input id='team' type='text' name='team' onkeyup="setTimeout(update, 5)"></div>
+            <div>Rank: <span id='rank'></span></div>
+            <div>Mean: <span id='mu'></span></div>
+            <div>Std Dev: <span id='sigma'></span></div>
+        </div>
+        <script src='js/scatter.js'></script>
+    </div>
+</div>
+
+
+</body>
