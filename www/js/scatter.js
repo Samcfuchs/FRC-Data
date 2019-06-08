@@ -46,6 +46,10 @@ function round(d) {
 }
 
 function drawPoint(row) {
+    if (row.point != undefined) {
+        row.point["_groups"][0][0].remove();
+    }
+
     point = main.append('circle')
     row.point = point
     row.point.attr('cx', x_scale(mu(row)))
