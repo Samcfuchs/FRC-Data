@@ -16,6 +16,10 @@ var main = d3.select(".viz").append("svg")
     .attr("height", HEIGHT)
     .attr("id", "scatter")
 
+var tooltip_div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
 function drawAxes(x_scale, y_scale) {
     // Making axes & labels
     main.append("g")
@@ -56,7 +60,33 @@ function drawPoint(row) {
         .attr('cy', y_scale(sigma(row)))
         .attr('r', RADIUS)
         .attr('fill', COLOR)
-        .attr('fill-opacity', ALPHA);
+        .attr('fill-opacity', ALPHA)
+
+        .on("mouseover", function(d) {
+            tooltip_div.transition()
+                .duration(100)
+                .style("opacity", .60);
+            tooltip_div.html(
+                "team: <b>" + row.Team + "</b></br>" +
+                "mu: <b>" + round(row.mu) + "</b></br>" +
+                "sigma: <b>" + round(row.sigma) + "</b></br>"
+            )
+            .style("left", (d3.event.pageX + 15) + "px")
+            .style("top", (d3.event.pageY + 10) + "px");
+
+            row.point.attr("stroke", "black");
+        })
+        // Make the tooltip follow the mouse
+        .on("mousemove", function(d) {
+            tooltip_div.style("left", (d3.event.pageX + 15) + "px");
+            tooltip_div.style("top", (d3.event.pageY + 10) + "px");
+        })
+        .on("mouseleave", function(d) {
+            row.point.attr("stroke", "none");
+            tooltip_div.transition()
+                .duration(100)
+                .style("opacity", 0);
+        });
 }
 
 function highlight(team) {
