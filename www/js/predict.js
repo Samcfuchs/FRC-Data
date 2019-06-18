@@ -85,10 +85,9 @@ function update() {
     blue_rows = data.filter( obj => { return obj.Team === blue; });
     red_rows = data.filter( obj => { return obj.Team === red; });
 
-    if (blue_rows.length + red_rows.length > 0) {
-        svg.selectAll("path.curve").remove();
-        
-        oblue = blue_rows[0]
+    svg.selectAll("path.curve").remove();
+    
+    oblue = blue_rows[0]
         ored = red_rows[0]
 
         blue_c = curve(oblue)
@@ -103,8 +102,7 @@ function update() {
         svg.append("path")
             .attr('class', 'curve')
             .attr('d', line(red_c))
-            .style('stroke', RED)
-            .style('fill', RED)
-    }
+        .style('stroke', RED)
+        .style('fill', RED)
 }
 
