@@ -1,7 +1,7 @@
 const HEIGHT = 200
 const WIDTH = 800
 
-const margin = { top:20, bottom:40, left:40, right:20 }
+const margin = { top:20, bottom:20, left:20, right:20 }
 
 const ALPHA = 0.5
 const BLUE = "#1f75b7"
@@ -51,11 +51,6 @@ function drawAxes(x_scale, y_scale) {
     svg.append('g')
         .call(d3.axisBottom(x_scale))
         .attr("transform", `translate(0, ${y_scale.range()[0]})`)
-        .attr("class", "axis");
-
-    svg.append('g')
-        .call(d3.axisLeft(y_scale))
-        .attr("transform", `translate(${x_scale.range()[0]},0)`)
         .attr("class", "axis");
 }
 
