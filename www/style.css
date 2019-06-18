@@ -1,4 +1,8 @@
-/* Add your CSS styles here! */
+:root {
+  --alliance-blue: #1f75b7;
+  --alliance-red: #e9373d;
+}
+
 body {
   box-sizing: border-box;
   margin: 0;
@@ -104,6 +108,14 @@ div.tooltip {
 }
 
 /* VIZ #2 */
+div.bar input#blue {
+  color: var(--alliance-blue);
+}
+
+div.bar input#red {
+  color: var(--alliance-red);
+}
+
 svg#predict path.curve {
   fill-opacity: 0.1;
   stroke-width: 2;
