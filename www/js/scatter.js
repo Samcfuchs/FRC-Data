@@ -11,7 +11,7 @@ const FILENAME = "../data/2019_end_ratings.csv"
 
 var data = 0
 
-var main = d3.select(".viz").append("svg")
+var main = d3.select("#scatter").append("svg")
     .attr("width", WIDTH)
     .attr("height", HEIGHT)
     .attr("id", "scatter")
@@ -124,7 +124,7 @@ function update() {
     });
 
     team = d3.select("#team").node().value;
-    rows = data.filter( obj => { return obj.Team === team; })
+    rows = data.filter( obj => { return obj.Team === team; } );
     console.log(rows)
 
     if (rows.length > 0) {
