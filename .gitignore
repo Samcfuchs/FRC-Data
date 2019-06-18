@@ -24,3 +24,4 @@ dist/
 
 Analytics/test\.py
 
+!/www/data/*
