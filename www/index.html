@@ -11,6 +11,8 @@
     <script src="https://d3js.org/d3-color.v1.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 </head>
 
 <body>
@@ -43,6 +45,14 @@
             <div>Std Dev: <span id='sigma'></span></div>
         </div>
         <script src='js/scatter.js'></script>
+    <p>
+        One challenge presented by the TrueSkill ranking system is reducing this
+        two-variable system into something we can use to rank teams. In order to
+        do so, we calculate \( \mu_i - 3\sigma_i \), which essentially
+        represents the lowest 0.1 percentile performance for each team \(i\). In
+        doing so, we account for both the mean and the standard deviation of the
+        performance for each team.
+    </p>
     </div>
 </div>
 
