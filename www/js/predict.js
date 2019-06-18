@@ -71,7 +71,7 @@ isImported.then( function(d) {
         d3.max(data, mu) + d3.max(data, sigma)
     ]);
 
-    y_scale.domain([0, 0.5]);
+    y_scale.domain([0, 0.4]);
 
     drawAxes(x_scale, y_scale)
 });
