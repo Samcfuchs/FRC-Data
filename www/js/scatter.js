@@ -89,10 +89,6 @@ function drawPoint(row) {
         });
 }
 
-function highlight(team) {
-    
-}
-
 // Create axis scales
 x_scale = d3.scaleLinear().range([margin.left, WIDTH-margin.right]);
 y_scale = d3.scaleLinear().range([HEIGHT-margin.bottom, margin.top]);
