@@ -45,6 +45,8 @@
             <div>Std Dev: <span id='sigma'></span></div>
         </div>
         <script src='js/scatter.js'></script>
+    </div>
+
     <p>
         One challenge presented by the TrueSkill ranking system is reducing this
         two-variable system into something we can use to rank teams. In order to
@@ -55,8 +57,8 @@
     </p>
     <div class='viz' id='predict'>
         <div class='bar'>
-            <div>Blue: <input id='blue' type='number' name='blue' onkeyup="setTimeout(update, 1)"></div>
-            <div>Red: <input id='red' type='number' name='red' onkeyup="setTimeout(update, 1)"></div>
+            <div>Blue: <input id='blue' type='number' name='blue'></div>
+            <div>Red: <input id='red' type='number' name='red'></div>
         </div>
         <script src='js/predict.js'></script>
     </div>

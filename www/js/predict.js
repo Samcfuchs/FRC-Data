@@ -1,15 +1,17 @@
+"use strict";
+(function() {
+
 const HEIGHT = 200
 const WIDTH = 800
 
 const margin = { top:20, bottom:20, left:20, right:20 }
 
-const ALPHA = 0.5
 const BLUE = "#1f75b7"
 const RED = "#e9373d"
 
 const FILENAME = "../data/2019_end_ratings.csv"
 
-var data = 0
+let data = 0
 
 function normal(mean, variance) {
     // Precompute portion of the function that does not depend on x
@@ -23,17 +25,17 @@ function normal(mean, variance) {
 function curve(row) {
     if (row === undefined) { return []; }
 
-    mu = Number(row.mu)
-    sigma = Number(row.sigma)
+    let mu = Number(row.mu)
+    let sigma = Number(row.sigma)
 
-    f = normal(mu, sigma);
+    let f = normal(mu, sigma);
 
-    lower = d3.max([mu - 4*sigma, x_scale.domain()[0]]);
-    upper = d3.min([mu + 4*sigma, x_scale.domain()[1]]);
-    interval = .01
+    let lower = d3.max([mu - 4*sigma, x_scale.domain()[0]]);
+    let upper = d3.min([mu + 4*sigma, x_scale.domain()[1]]);
+    let interval = .01
 
-    x = d3.range(lower, upper, interval);
-    y = x.map(f);
+    let x = d3.range(lower, upper, interval);
+    let y = x.map(f);
 
     return d3.zip(x,y);
 }
@@ -55,14 +57,14 @@ function drawAxes(x_scale, y_scale) {
 }
 
 // Create axis scales
-x_scale = d3.scaleLinear().range([margin.left, WIDTH-margin.right]);
-y_scale = d3.scaleLinear().range([HEIGHT-margin.bottom, margin.top]);
+let x_scale = d3.scaleLinear().range([margin.left, WIDTH-margin.right]);
+let y_scale = d3.scaleLinear().range([HEIGHT-margin.bottom, margin.top]);
 
-var mu = function(d) { return +d['mu']; }
-var sigma = function(d) { return +d['sigma']; }
-var rank = function(d) { return +d['rank']; }
+let mu = function(d) { return +d['mu']; }
+let sigma = function(d) { return +d['sigma']; }
+let rank = function(d) { return +d['rank']; }
 
-isImported = d3.csv(FILENAME)
+let isImported = d3.csv(FILENAME)
 
 isImported.then( function(d) {
     data = d
@@ -76,33 +78,35 @@ isImported.then( function(d) {
     drawAxes(x_scale, y_scale)
 });
 
-blue_c = 0
-red_c = 0
 function update() {
-    blue = d3.select("#blue").node().value;
-    red = d3.select("#red").node().value;
+    let blue = d3.select("#blue").node().value;
+    let red = d3.select("#red").node().value;
 
-    blue_rows = data.filter( obj => { return obj.Team === blue; });
-    red_rows = data.filter( obj => { return obj.Team === red; });
+    let blue_rows = data.filter( obj => { return obj.Team === blue; });
+    let red_rows = data.filter( obj => { return obj.Team === red; });
 
     svg.selectAll("path.curve").remove();
     
-    oblue = blue_rows[0]
-        ored = red_rows[0]
+    let oblue = blue_rows[0]
+    let ored = red_rows[0]
 
-        blue_c = curve(oblue)
-        red_c = curve(ored)
+    let blue_c = curve(oblue)
+    let red_c = curve(ored)
 
-        svg.append("path")
-            .attr('class', 'curve')
-            .attr('d', line(blue_c))
-            .style('stroke', BLUE)
-            .style('fill', BLUE)
+    svg.append("path")
+        .attr('class', 'curve')
+        .attr('d', line(blue_c))
+        .style('stroke', BLUE)
+        .style('fill', BLUE)
 
-        svg.append("path")
-            .attr('class', 'curve')
-            .attr('d', line(red_c))
+    svg.append("path")
+        .attr('class', 'curve')
+        .attr('d', line(red_c))
         .style('stroke', RED)
         .style('fill', RED)
 }
 
+// Trigger an update on any input in boxes
+d3.select("input#blue")["_groups"][0][0].onkeyup = update;
+d3.select("input#red")["_groups"][0][0].onkeyup = update;
+})();

@@ -1,3 +1,6 @@
+"use strict";
+(function() {
+
 const HEIGHT = 600
 const WIDTH = 800
 
@@ -54,7 +57,7 @@ function drawPoint(row) {
         row.point["_groups"][0][0].remove();
     }
 
-    point = main.append('circle')
+    let point = main.append('circle')
     row.point = point
     row.point.attr('cx', x_scale(mu(row)))
         .attr('cy', y_scale(sigma(row)))
@@ -90,14 +93,13 @@ function drawPoint(row) {
 }
 
 // Create axis scales
-x_scale = d3.scaleLinear().range([margin.left, WIDTH-margin.right]);
-y_scale = d3.scaleLinear().range([HEIGHT-margin.bottom, margin.top]);
+let x_scale = d3.scaleLinear().range([margin.left, WIDTH-margin.right]);
+let y_scale = d3.scaleLinear().range([HEIGHT-margin.bottom, margin.top]);
 
-var mu = function(d) { return +d['mu']; }
-var sigma = function(d) { return +d['sigma']; }
-var rank = function(d) { return +d['rank']; }
+let mu = function(d) { return +d['mu']; }
+let sigma = function(d) { return +d['sigma']; }
 
-isImported = d3.csv(FILENAME)
+let isImported = d3.csv(FILENAME)
 
 isImported.then( function(d) {
     data = d
@@ -134,3 +136,6 @@ function update() {
     }
 
 }
+
+d3.select("input#team")["_groups"][0][0].onkeyup = update;
+})();
