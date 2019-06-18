@@ -102,3 +102,9 @@ div.tooltip {
   font-size: 10px;
   color: black;
 }
+
+/* VIZ #2 */
+svg#predict path.curve {
+  fill-opacity: 0.1;
+  stroke-width: 2;
+}
