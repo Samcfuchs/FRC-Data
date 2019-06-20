@@ -11,6 +11,8 @@ const RED = "#e9373d"
 
 const FILENAME = "../data/2019_end_ratings.csv"
 
+const RESOLUTION = 0.1
+
 let data = 0
 
 function normal(mean, variance) {
@@ -32,9 +34,8 @@ function curve(row) {
 
     let lower = d3.max([mu - 4*sigma, x_scale.domain()[0]]);
     let upper = d3.min([mu + 4*sigma, x_scale.domain()[1]]);
-    let interval = .01
 
-    let x = d3.range(lower, upper, interval);
+    let x = d3.range(lower, upper, RESOLUTION);
     let y = x.map(f);
 
     return d3.zip(x,y);
