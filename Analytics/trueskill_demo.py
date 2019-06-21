@@ -3,6 +3,7 @@
 
 #%%
 # Set up environment
+import models
 from models import TSModel
 import tbapy
 import pandas as pd
@@ -94,8 +95,8 @@ start = time.time()
 for year in years:
     filename = f"../data/{year}_MatchData_ol.csv"
     data = pd.read_csv(filename)
-    data = process_data(data)
-    data = sort_data(data)
+    data = models.process_data(data)
+    data = models.sort_data(data)
 
     print(f"Year: {year}")
     print(f"Simulating {len(data)} matches")
@@ -265,9 +266,9 @@ COLS_REN = {
 }
 
 data = pd.read_csv(f"../data/{YEAR}_MatchData_ol.csv")
-data = process_data(data)
-data = sort_data(data)
-teams = get_teams([YEAR])
+data = models.process_data(data)
+data = models.sort_data(data)
+teams = models.get_teams([YEAR])
 
 data.drop(DROPS, axis=1, inplace=True)
 
