@@ -18,8 +18,126 @@
 <body>
 
 <div id='content'>
-    <h1>TrueSkill FRC Predictions</h1>
+    <h1>Quantifying Skill in FRC</h1>
     <p id='sub'>Sam Fuchs</p>
+    <p>
+        As scouting has become ever more prevalent in FIRST
+        Robotics, patterns have started to emerge in the challenges teams face
+        in their analytics and the ways they tend to face them. Most
+        prominently, we find that while many teams are able to collect vast
+        amounts of data through their scouting arm, it's often difficult to use
+        that data to make meaningful predictions of match outcome when we don't
+        understand exactly how representative that data is of a team's ability.
+        The design of FRC games inherently introduces massive amounts of
+        variance which is difficult to quantify - robots themselves are
+        inconsistent, and the singular skill of one robot is diluted by the
+        introduction of five other robots onto the field. So we aim to build a
+        system that can accurately quantify the skill of a given team and use
+        that information to gain insights and make predictions.
+    </p>
+    <h2>Cumulative Rank Points</h2>
+    <p>
+        This is the rank system officially used by FRC to rank teams within
+        qualifying matches at events. Any team that has competed at any FRC
+        event can tell you it comes with a host of problems. For instance, teams
+        can benefit greatly from an imbalanced schedule &mdash; since this metric
+        makes no attempt to distinguish between the scoring contributions of the
+        individual teams on the alliance, a team that happens to compete
+        alongside capable robots can be boosted heigh up in the rankings,
+        independent of their own ability. In addition, it suffers from the
+        changing dynamic of the game from the qualifying to elimination matches
+        &mdash; teams are forced to play an arbitrarily different game in
+        qualifying matches, making decisions, such as placing all their cargo
+        into a single rocket, prioritizing the switch over the scale, or
+        corssing additional defenses, that are unstrategic in eliminations. As a
+        result, ranking points are an imprecise predictor of elimination-match
+        ability.
+    </p>
+    <h2>Winrate</h2>
+    <p>
+        A classic and simple metric, winrate is used widely in professional
+        sports to seed teams for tournaments. Nevertheless, the alliance
+        differentiation problem presented by the rank point system is even more
+        pronounced in the winrate metric, which accounts even less for granular
+        scoring actions. However, because it is familiar and simple, winrate
+        nets a lot of attention in FRC, most notably surrounding team 254's
+        perfect 2018 season.
+    </p>
+    <h2>Average Win Margin</h2>
+    <p>
+        Often, teams aiming to improve upon a winrate predictor tend to settle
+        on average win margin, which appears to provide a more granular image of
+        match results, and gives teams more credit for scoring more points
+        &mdash; isn't that what we're trying to do anyway? However, the average
+        win margin predictor can fall apart under a closer examination of match
+        strategy. In particular, it punishes teams that win more competitive
+        matches in eliminations &mdash; when 330's alliance won the World
+        Championship in 2016 by exactly 0 points, their performance as evaluated
+        by an average win margin predictor decreased while they demonstrated
+        that they were the best alliance in the world.
+    </p>
+    <h2>Offensive Power Rating</h2>
+    <p>
+        Offensive Power Ranking might be the most contentious statistic in FRC.
+        OPR's main draw is its professed ability to pick apart an alliance and
+        determine the contributions of each individual robot. Unfortunately I've
+        never had the chance to see an actual analysis of how well it manages to
+        make those predictions. While I generally advocate against the abuse of
+        OPR, it's basically sound and can give some valuable insights. That
+        said, one of the chief assumptions of linear algebra is that its
+        predictors are independent, which any alliance captain can tell you is
+        not practical. In short, an alliance is more powerful than the sum of
+        its parts, and OPR fails to account for this. More importantly for our
+        purposes, though, OPR doesn't scale well. By the nature of the
+        calculation, it works best in a closed system, with a reasonably limited
+        number of teams and a high density. From a linear algebra standpoint,
+        FRC data is too sparse for OPR to be computationally practical. This is
+        why sites like frc.divisions.co list a maximum OPR, rather than
+        calculating world OPRs per season. These same problems are shared by
+        DPR, which is essentially the same algorithm but used to predict the
+        depression in the opposing alliance's score, i.e. the effect of defense,
+        and also by CCWM (calculated contribution to win margin).
+    </p>
+    <h2>The Elo Model</h2>
+    <p>
+        The Elo system was designed by chess master and physics professor Arpad
+        Elo as a more accurate way to evaluate relative skill levels in chess,
+        although it can naturally be extended to any zero-sum, two-player game.
+        The World Chess Federation still uses a form of his algorithm, which
+        also sees widespread use in other fields, including video games such as
+        League of Legends and Overwatch.
+        <br>
+        The Elo system uses the skill of each player to make a prediction of the
+        match outcome, then uses that prediction and the result of the match to
+        adjust each player's score. We calculate the expected score \(E_A\) of player
+        \(A\) with the following equation:
+
+        $$E_P = \frac{1}{1 + 10^{(R_A-R_B)/400}}$$
+
+        Where \(R_A\) and \(R_B\) are the Elo ratings of players \(A\) and
+        \(B\), respectively. This corresponds to a logistic curve which gives
+        the likelihood of each player winning. Once the match is played, we
+        the scores as such:
+
+        $$R_A^\prime = R_A + K(S_A - E_A)$$
+
+        Where \(S_A\) is the actual outcome of the match, and \(K\) is a
+        volatility constant discussed below.
+        
+        Note that it is also trivial to
+        prove that the model is zero-sum, i.e. \(E_A-E_B = 0\) for any \(R_A,
+        R_B\). 
+        <br>
+        While Elo acknowledged that different players might have differing a
+        differing variance in their skill, he chose to assume otherwise for the
+        sake of simplicity. Instead, the model uses a single constant factor
+        \(K\) to determine the volatility of the model, i.e. how many points are
+        exchanged in each match, independent of skill. This value is somewhat
+        arbitrary and must be tuned to attempt to closely match the actual
+        volatility of a player's ability.
+    </p>
+    
+    <h2>The TrueSkill Model</h2>
     <p>
         TrueSkill is a novel ranking system invented by Microsoft for use in
         conjunction with the Xbox gaming system, to create a standardized way to
