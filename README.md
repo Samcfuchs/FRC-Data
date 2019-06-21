@@ -35,8 +35,3 @@ In particular, the MatchData script does a lot of preprocessing of the data from
 The Blue Alliance, and as a result it needs to be updated on a yearly basis.
 Unfortunately, FIRST releases it's API spec as late as week 1 competitions
 sometimes, so I'm unable to update them until then.
-
-## TODO
-
-- [ ] Gracefully handle adding new teams to model
-- [ ] Record team ratings and predicted outcome before each match
