@@ -201,6 +201,51 @@ ax2.set_ylim(1,1.5)
 fig.show()
 
 #%%
+# Prediction demo
+def match_teams(match_key):
+    match = tba.match(key=match_key, simple=True)
+
+    blue = [int(t[3:]) for t in match.alliances['blue']['team_keys']]
+    red = [int(t[3:]) for t in match.alliances['red']['team_keys']]
+
+    return (blue,red)
+
+match_key = "2019cmpmi_f1m1"
+blue, red = match_teams(match_key)
+print(f"Match: {match_key}")
+print(f"Blue: {blue}")
+print(f"Red: {red}")
+print(f"Blue win probability: {model.predict(blue, red):.3%}")
+print(f"Match quality: {model.quality(blue, red):.3%}")
+
+#%%
+# We can also calculate the rating of an alliance by adding together the
+# distributions for each team on the alliance. Naturally, we sum the variance as
+# well to produce a skill rating for each alliance, which we can compare to rank
+# the Einstein finalists.
+
+#%%
+# Rank finalist alliances
+alliances = {
+    'arc': (5406,930,1310,4004),
+    'tes': (346,548,5401,2534),
+    'cars': (5050,111,4607,2052),
+    'dar': (3707,217,4481,1218),
+    'cur': (195,3538,1073,230),
+    'dal': (4003,133,862,2614)
+}
+
+ratings = pd.DataFrame(
+    {
+        'Alliance':list(alliances.keys()),
+        'Rating':[model.rate_alliance(a) for a in list(alliances.values())]
+    }
+)
+
+ratings['Score'] = ratings.Rating.apply(model.env.expose)
+ratings.sort_values('Score', ascending=False)
+
+#%%
 # Build dataframe for OPRS
 YEAR = 2019
 DROPS = ['Year','Event','Week','comp_level','set','match','winner']
