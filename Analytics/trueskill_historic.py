@@ -1,4 +1,4 @@
-#%%
+#%% [markdown]
 # # Historic Trueskill Modeling
 
 #%%
@@ -227,7 +227,7 @@ print(f"Red: {red}")
 print(f"Blue win probability: {model.predict(blue, red):.3%}")
 print(f"Match quality: {model.quality(blue, red):.3%}")
 
-#%%
+#%% [markdown]
 # We can also calculate the rating of an alliance by adding together the
 # distributions for each team on the alliance. Naturally, we sum the variance as
 # well to produce a skill rating for each alliance, which we can compare to rank
