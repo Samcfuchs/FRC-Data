@@ -18,6 +18,9 @@ tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 #%%
 # Create our data processing pipeline
 def process_data(df):
+    """
+    Collate teams into 3-tuple alliances for each match.
+    """
     cols_ren = {
         'Competition Level':'comp_level',
         'Match Number': 'match',
@@ -43,6 +46,9 @@ def process_data(df):
     return df
 
 def sort_data(df):
+    """
+    Sort matches into the approximate order they occurred
+    """
     sort_order = ['Week','event_n','Event','comp_level_n','set','match']
 
     comp_level_f = { 'qm':0, 'qf':1, 'sf':2, 'f':3 }
@@ -59,6 +65,9 @@ def sort_data(df):
     return df
 
 def get_teams(years):
+    """
+    Get a list of all teams that competed in the given range of years
+    """
     teams = set()
     for year in years:
         teams.update([int(key[3:]) for key in tba.teams(year=year, keys=True)])
@@ -110,7 +119,7 @@ print(f"Brier score: {model.test(data.winner)}")
 # effect, we test by importing the 2018 model and training it on the 2019 season
 # once again and recording our predictions. Then we find the Brier score of
 # those predictions against the actual results. All of this is handled by the
-# model's `train()` and `test()` methods.
+# model's `train()` and `test()` methods, with logging enabled.
 
 #%%
 YEAR = 2019
