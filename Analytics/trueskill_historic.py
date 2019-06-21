@@ -97,7 +97,7 @@ for year in years:
     print(f"Training time: {int(time.time() - substart)} s")
     print("=" * 35)
 
-    model.export(f"{year}_end_ratings.csv")
+    model.export(f"data/{year}_end_ratings.csv")
 
 print(f"Training time: {int(time.time() - start)} s")
 print(f"Brier score: {model.test(data.winner)}")
@@ -139,7 +139,7 @@ print(f"Brier score: {trainedmodel.test(data.winner)}")
 
 #%%
 model = TSModel(logging=True)
-model.load("2019_end_ratings.csv")
+model.load("data/2019_end_ratings.csv")
 sns.kdeplot(model.table.loc[model.table.Score != 0,'Score'])
 plt.show()
 
