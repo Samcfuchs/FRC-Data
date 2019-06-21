@@ -6,6 +6,91 @@ import math
 import tbapy
 import os
 
+class EloModel:
+
+    def __init__(self, teams=[], k=10, n=400, i=1000, logging=False):
+        self.K = k
+        self.N = n
+        self.I = i
+        self.logging = logging
+
+        self.table = pd.DataFrame(columns=['Team','Rating','Rank'])
+        self.log = {'Key':[], 'Prediction':[]}
+        self.table.Team = teams
+        self.table.Rating = [self.I] * len(self.table)
+        self.table.set_index('Team', inplace=True)
+    
+
+    def load(self, filename):
+        """ Load the model from a csv file """
+        csv = pd.read_csv(filename)
+        csv.set_index('Team', inplace=True)
+        self.table = csv
+
+
+    def rate(self, team):
+        """ Get the rating for a team """
+        return table.loc[team, 'Rating']
+        pass
+    
+    
+    def rate_alliance(self, alliance:Tuple):
+        """ Get the total rating of an alliance """
+        return sum(self.table.loc[alliance, 'Rating'])
+    
+
+    def P(self, r1, r2):
+        """ Get the probability that r1 defeats r2 """
+        return 1.0 / ( 1 + math.pow(10, (r1-r2)/self.N) )
+
+
+    def predict(self, blue, red):
+        """ Get the probability that the blue alliance wins """
+        r_b = rate_alliance(blue)
+        r_r = rate_alliance(red)
+
+        p_b = P(r_b, r_r)
+
+        return p_b
+    
+    
+    def get_delta_match(self, match):
+        """ Get the number of points that should be exchanged """
+        b = match['blue']
+        r = match['red']
+
+        p_b = self.predict(b, r)
+
+        if row.winner == 'blue':
+            outcome = 1.0
+        elif row.winner == 'red':
+            outcome = 0.0
+        elif row.winner == 'tie':
+            outcome = 0.5
+        
+        return self.K * (outcome - p_b)
+
+
+    def train(self, row):
+        """ Train on a single match """
+        d = get_delta_match(row)
+
+        self.table.loc[row['blue'], 'Rating'] += d
+        self.table.loc[row['red'], 'Rating'] -= d
+
+
+    def rank(self):
+        """ Rank and sort the table """
+        self.table.Rank = self.table.Rating.rank(ascending=False)
+        self.table.sort_values('Rating', ascending=False, inplace=True)
+    
+
+    def export(self, filename):
+        """ Export the model to a csv file """
+        self.rank()
+        self.table.to_csv(filename, columns=columns)
+
+
 class TSModel:
     tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
