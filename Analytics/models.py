@@ -92,8 +92,7 @@ class EloModel:
 
     def rate(self, team):
         """ Get the rating for a team """
-        return table.loc[team, 'Rating']
-        pass
+        return self.table.loc[team, 'Rating']
     
     
     def rate_alliance(self, alliance:Tuple):
@@ -108,10 +107,10 @@ class EloModel:
 
     def predict(self, blue, red):
         """ Get the probability that the blue alliance wins """
-        r_b = rate_alliance(blue)
-        r_r = rate_alliance(red)
+        r_b = self.rate_alliance(blue)
+        r_r = self.rate_alliance(red)
 
-        p_b = P(r_b, r_r)
+        p_b = self.P(r_b, r_r)
 
         return p_b
     
@@ -123,11 +122,11 @@ class EloModel:
 
         p_b = self.predict(b, r)
 
-        if row.winner == 'blue':
+        if match.winner == 'blue':
             outcome = 1.0
-        elif row.winner == 'red':
+        elif match.winner == 'red':
             outcome = 0.0
-        elif row.winner == 'tie':
+        elif match.winner == 'tie':
             outcome = 0.5
         
         return self.K * (outcome - p_b)
@@ -135,7 +134,7 @@ class EloModel:
 
     def train(self, row):
         """ Train on a single match """
-        d = get_delta_match(row)
+        d = self.get_delta_match(row)
 
         self.table.loc[row['blue'], 'Rating'] += d
         self.table.loc[row['red'], 'Rating'] -= d
@@ -149,6 +148,7 @@ class EloModel:
 
     def export(self, filename):
         """ Export the model to a csv file """
+        columns = ['Rating', 'Rank']
         self.rank()
         self.table.to_csv(filename, columns=columns)
 
