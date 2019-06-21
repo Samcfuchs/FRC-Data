@@ -37,7 +37,7 @@ class TSModel:
         ratings = list(self.table.loc[alliance, 'Rating'])
 
         mu = sum(r.mu for r in ratings)
-        sigma = sum((self.env.beta**2 + r.sigma**2) for r in ratings)
+        sigma = math.sqrt(sum((self.env.beta**2 + r.sigma**2) for r in ratings))
 
         return ts.Rating(mu, sigma)
 
