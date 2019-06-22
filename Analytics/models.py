@@ -115,26 +115,25 @@ class EloModel:
         return p_b
     
     
-    def get_delta_match(self, match):
-        """ Get the number of points that should be exchanged """
-        b = match['blue']
-        r = match['red']
+    def train(self, row):
+        """ Train on a single match """
+        b = row['blue']
+        r = row['red']
 
         p_b = self.predict(b, r)
 
-        if match.winner == 'blue':
+        if self.logging:
+            self.log['Key'].append(row.Key)
+            self.log['Prediction'].append(p_b)
+            
+        if row.winner == 'blue':
             outcome = 1.0
-        elif match.winner == 'red':
+        elif row.winner == 'red':
             outcome = 0.0
-        elif match.winner == 'tie':
+        elif row.winner == 'tie':
             outcome = 0.5
         
-        return self.K * (outcome - p_b)
-
-
-    def train(self, row):
-        """ Train on a single match """
-        d = self.get_delta_match(row)
+        d = self.K * (outcome - p_b)
 
         self.table.loc[row['blue'], 'Rating'] += d
         self.table.loc[row['red'], 'Rating'] -= d
