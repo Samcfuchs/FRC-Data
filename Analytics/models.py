@@ -137,6 +137,14 @@ class EloModel:
 
         self.table.loc[row['blue'], 'Rating'] += d
         self.table.loc[row['red'], 'Rating'] -= d
+    
+    
+    def test(self, winner) -> float:
+        """ Get the Brier score of the model on the predictions it logged """
+        winner.fillna('tie')
+        f = { 'blue':1, 'red':0, 'tie':0.5 }
+
+        return ((winner.map(f) - self.log['Prediction'])**2).mean()
 
 
     def rank(self):
