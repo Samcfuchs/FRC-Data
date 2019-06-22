@@ -102,7 +102,7 @@ class EloModel:
 
     def P(self, r1, r2):
         """ Get the probability that r1 defeats r2 """
-        return 1.0 / ( 1 + math.pow(10, (r1-r2)/self.N) )
+        return 1.0 / ( 1 + math.pow(10, (r2-r1)/self.N) )
 
 
     def predict(self, blue, red):
