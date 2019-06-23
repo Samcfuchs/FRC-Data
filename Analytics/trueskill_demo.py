@@ -66,7 +66,7 @@ print(f"Brier score: {model.test(data.winner)}")
 #%%
 YEAR = 2019
 trainedmodel = TSModel(logging=True)
-trainedmodel.load(f"{YEAR-1}_end_ratings.csv")
+trainedmodel.load(f"data/{YEAR-1}_end_ratings.csv")
 
 data = pd.read_csv(f"../data/{YEAR}_MatchData_ol.csv")
 data = models.process_data(data)
