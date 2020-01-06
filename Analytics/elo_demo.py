@@ -15,7 +15,7 @@ import seaborn as sns
 years = range(2005, 2020)
 teams = models.get_teams(years)
 
-model = EloModel(teams, k=20, n=400, i=1000, logging=True)
+model = EloModel(teams, k=30, n=400, i=1000, logging=True)
 
 print(f"Training on {','.join(map(str,years))}")
 print('='*35)
@@ -38,7 +38,7 @@ for year in years:
     print(f"Training time: {int(time.time() - substart)} s")
     print("="*35)
 
-    model.export(f"data/{year}_end_elos_k20.csv")
+    model.export(f"data/{year}_end_elos_k30.csv")
 
 print(f"Training Time: {int(time.time() - start)} s")
 print(f"Brier score: {model.test(pd.concat(winners))}")
@@ -56,7 +56,7 @@ model.table.head(25)
 YEAR = 2019
 
 trained = EloModel(k=20, logging=True)
-trained.load(f"data/{YEAR-1}_end_elos_k15.csv")
+trained.load(f"data/{YEAR-1}_end_elos_k20.csv")
 
 filename = f"../data/{YEAR}_MatchData_ol.csv"
 data = pd.read_csv(filename)
@@ -73,3 +73,6 @@ print(f"Training time: {int(time.time() - substart)} s")
 print("="*35)
 
 print(f"Brier: {trained.test(data.winner)}")
+
+
+#%%
