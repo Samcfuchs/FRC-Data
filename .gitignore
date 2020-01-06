@@ -23,5 +23,6 @@ dist/
 *.zip
 
 Analytics/test\.py
+Analytics/compiled/elo_testing_*
 
 !/www/data/*
