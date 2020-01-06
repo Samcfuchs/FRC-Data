@@ -293,11 +293,11 @@ class TSModel:
 
 class OPRModel:
 
-    def __init__(self):
-        pass
+    def __init__(self, logging=False):
+        self.logging = logging
 
 
-    def build_records(self, matchdata):
+    def load(self, filename):
         DROPS = ['Year','Event','Week','comp_level','set','match','winner']
         COLS_REN = {
             'Key': 'key',
@@ -305,14 +305,18 @@ class OPRModel:
             'red score':'score',   'red':'teams'
         }
 
-        data = matchdata.drop(DROPS, axis=1)
+        data = pd.read_csv(filename)
+        data = process_data(data)
+        data = sort_data(data)
+        data = data.drop(DROPS, axis=1)
 
-        blue = data.loc[:,['Key','blue score','blue']]
+        # Break into alliances
+        blue = data.loc[:, ['Key','blue score', 'blue']]
         blue['alliance'] = ['blue']*len(blue)
         blue.rename(columns=COLS_REN, inplace=True)
         blue.index = blue.index * 2
 
-        red = data.loc[:,['Key','red score','red']]
+        red = data.loc[:, ['Key','red score','red']]
         red['alliance'] = ['red']*len(red)
         red.rename(columns=COLS_REN, inplace=True)
         red.index = red.index * 2 + 1
@@ -320,30 +324,41 @@ class OPRModel:
         data = pd.concat([blue,red], axis=0).sort_index()
         data = data[['key','alliance','teams','score']]
 
+        self.teams = list(set([t for a in data.teams for t in a]))
+        self.data = data
+
         return data
 
 
-    def build_sparse_matrix(self, records):
-        sparse = pd.DataFrame(0, index=np.arange(len(records)), columns=['key','alliance']+teams)
+    def build_sparse_matrix(self, data):
+        sparse = pd.DataFrame(0, index=np.arange(len(data)), columns=['key','alliance','score']+self.teams)
         sparse['key'] = data['key']
         sparse['alliance'] = data['alliance']
+        sparse['score'] = data['score']
 
         def f(row):
-            sparse.loc[(sparse.key==row.key) & (sparse.alliance==row.alliance),row.teams] = 1
+            sparse.loc[(sparse.key==row.key) & (sparse.alliance==row.alliance), row.teams] = 1
 
-        records.apply(f, axis=1)
+        self.data.apply(f, axis=1)
+
+        self.sparse = sparse
         
         return sparse
 
 
-    def train(self, data):
-        records = self.build_records(data)
-        sparse = self.build_sparse_matrix(records)
+    def train(self, filename):
+        self.load(filename)
+        self.build_sparse_matrix(self.data)
 
-        coef = sparse.drop(['key','alliance'], axis=1).to_numpy()
-        self.oprs,_,_,_ = np.linalg.lstsq(coef, data.score, rcond=None)
-        self.oprs = pd.DataFrame({'team':teams, 'opr':oprs})
-        self.oprs.sort_values('opr', ascending=False, inplace=True)
+        coef = self.sparse.drop(['key','alliance','score'], axis=1).to_numpy()
+        self.oprs,self.resid,_,_ = np.linalg.lstsq(coef, self.data.score, rcond=None)
+
+        self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }
+
+        self.opr_table = pd.DataFrame({'team':self.teams, 'opr':self.oprs})
+        self.opr_table.sort_values('opr', ascending=False, inplace=True)
+
+        return self.opr_table
     
     
     def predict(self):
