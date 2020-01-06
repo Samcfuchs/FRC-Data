@@ -29,8 +29,6 @@ data = models.process_data(data)
 data = models.sort_data(data)
 data = data.drop(DROPS, axis=1)
 
-teams = models.get_teams([YEAR])
-
 # Break up into alliances
 blue = data.loc[:, ['Key','blue score','blue']]
 blue['alliance'] = ['blue']*len(blue)
@@ -44,6 +42,8 @@ red.index = red.index * 2 + 1
 
 data = pd.concat([blue,red], axis=0).sort_index()
 data = data[['key','alliance','teams','score']]
+
+teams = list(set([t for a in data.teams for t in a]))
 
 data.head(10)
 
@@ -98,3 +98,16 @@ sq_errors = data.apply(diff, axis=1)
 plt.hist(sq_errors)
 
 # %%
+row = {t:0 for t in teams}
+sparse = {f"{r.key}_{r.alliance[0]}":dict(row) for i,r in data.iterrows()}
+
+#%%
+def build_sparse(row):
+    sparse[f"{row.key}_{row.alliance[0]}"].update(dict(zip(row.teams, [1,1,1])))
+
+data.apply(build_sparse, axis=1)
+
+#%%
+# Deconstruct sparse into matrix
+sparse_m = np.array([list(d.values()) for d in sparse.values()])
+sparse_m

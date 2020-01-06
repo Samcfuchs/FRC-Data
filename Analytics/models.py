@@ -346,11 +346,28 @@ class OPRModel:
         return sparse
 
 
+    def build_sparse_matrix_fast(self, data):
+        row = {t:0 for t in self.teams}
+        sparse = {f"{r.key}_{r.alliance[0]}":dict(row) for i,r in data.iterrows()}
+
+        def f(row):
+            sparse[f"{row.key}_{row.alliance[0]}"].update(dict(zip(row.teams, [1,1,1])))
+        
+        data.apply(f, axis=1)
+
+        sparse_m = np.array([list(d.values()) for d in sparse.values()])
+    
+        self.sparse = sparse_m
+
+        return row
+
+
     def train(self, filename):
         self.load(filename)
-        self.build_sparse_matrix(self.data)
+        self.build_sparse_matrix_fast(self.data)
 
-        coef = self.sparse.drop(['key','alliance','score'], axis=1).to_numpy()
+        #coef = self.sparse.drop(['key','alliance','score'], axis=1).to_numpy()
+        coef = self.sparse
         self.oprs,self.resid,_,_ = np.linalg.lstsq(coef, self.data.score, rcond=None)
 
         self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }

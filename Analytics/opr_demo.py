@@ -11,8 +11,9 @@ import time
 model = OPRModel()
 
 start = time.time()
-model.train("../data/2012_MatchData_ol.csv")
+model.train("../data/2019_MatchData_ol.csv")
 print(f"Time: {int(time.time() - start)} s")
+model.opr_table.head(10)
 
 #%%
 sns.kdeplot(model.opr_table.opr)
