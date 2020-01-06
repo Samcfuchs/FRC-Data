@@ -27,17 +27,19 @@ tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 # Multi-year simulation
 years = range(2005, 2020)
 teams = models.get_teams(years)
-model = TSModel(teams, logging=True)
+model = TSModel(teams, env=models.ts.setup(mu=1000,sigma=100,beta=100,tau=10,draw_probability=.01), logging=True)
 
 print(f"Training on {','.join(map(str, years))}")
 print('='*35)
 start = time.time()
+winners = []
 
 for year in years:
     filename = f"../data/{year}_MatchData_ol.csv"
     data = pd.read_csv(filename)
     data = models.process_data(data)
     data = models.sort_data(data)
+    winners.append(data.winner)
 
     print(f"Year: {year}")
     print(f"Simulating {len(data)} matches")
@@ -48,10 +50,13 @@ for year in years:
     print(f"Training time: {int(time.time() - substart)} s")
     print("=" * 35)
 
-    model.export(f"data/{year}_end_ratings.csv")
+    #model.export(f"data/{year}_end_ratings.csv")
 
 print(f"Training time: {int(time.time() - start)} s")
-print(f"Brier score: {model.test(data.winner)}")
+print(f"Brier score ovr: {model.test(pd.concat(winners))}")
+
+model.rank()
+model.table.head(10)
 
 #%% [markdown]
 # ## Testing
@@ -64,6 +69,7 @@ print(f"Brier score: {model.test(data.winner)}")
 # model's `train()` and `test()` methods, with logging enabled.
 
 #%%
+# Test with 2019 data
 YEAR = 2019
 trainedmodel = TSModel(logging=True)
 trainedmodel.load(f"data/{YEAR-1}_end_ratings.csv")
@@ -195,68 +201,4 @@ ratings = pd.DataFrame(
 
 ratings['Score'] = ratings.Rating.apply(model.env.expose)
 ratings.sort_values('Score', ascending=False)
-
-#%%
-# Build dataframe for OPRS
-YEAR = 2019
-DROPS = ['Year','Event','Week','comp_level','set','match','winner']
-COLS_REN = {
-    'Key': 'key',
-    'blue score':'score',  'blue':'teams',
-    'red score':'score',   'red':'teams'
-}
-
-data = pd.read_csv(f"../data/{YEAR}_MatchData_ol.csv")
-data = models.process_data(data)
-data = models.sort_data(data)
-teams = models.get_teams([YEAR])
-
-data.drop(DROPS, axis=1, inplace=True)
-
-blue = data.loc[:,['Key','blue score','blue']]
-blue['alliance'] = ['blue']*len(blue)
-blue.rename(columns=COLS_REN, inplace=True)
-blue.index = blue.index * 2
-
-red = data.loc[:,['Key','red score','red']]
-red['alliance'] = ['red']*len(red)
-red.rename(columns=COLS_REN, inplace=True)
-red.index = red.index * 2 + 1
-
-data = pd.concat([blue,red], axis=0).sort_index()
-data = data[['key','alliance','teams','score']]
-data.head(10)
-
-#%%
-# Build matrix
-sparse = pd.DataFrame(0, index=np.arange(len(data)), columns=['key','alliance']+teams)
-sparse['key'] = data['key']
-sparse['alliance'] = data['alliance']
-
-def f(row):
-    sparse.loc[(sparse.key==row.key) & (sparse.alliance==row.alliance),row.teams] = 1
-
-start = time.time()
-data.apply(f, axis=1)
-print(f"Time: {int(time.time() - start)} s")
-
-#%%
-# Solve for OPRS
-coef = sparse.drop(['key','alliance'], axis=1).to_numpy()
-oprs,resid,_,_ = np.linalg.lstsq(coef, data.score, rcond=None)
-oprs = pd.DataFrame({'team':teams,'opr':oprs})
-oprs.sort_values('opr', ascending=False, inplace=True)
-oprs.head(25)
-
-#%%
-fig,ax = plt.subplots()
-
-x = model.table.sort_values('Team').loc[model.table.index.isin(oprs.team),'Score']
-y = oprs.sort_values('team').opr
-
-ax.scatter(x, y, alpha=0.1)
-ax.set_title('Metrics')
-ax.set_xlabel('Score')
-ax.set_ylabel('OPR')
-
-fig.show()
+ratings
