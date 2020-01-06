@@ -162,9 +162,9 @@ class EloModel:
 
 class TSModel:
 
-    def __init__(self, teams=[], tie_rate=0.02, logging=False):
+    def __init__(self, teams=[], env=ts.setup(), logging=False):
         self.logging = logging
-        self.env = ts.setup(draw_probability=tie_rate)
+        self.env = env
         self.table = pd.DataFrame(columns=['Team','Rating','Score','Rank'])
         self.log = {'Key':[], 'Prediction':[]}
 
