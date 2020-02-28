@@ -25,7 +25,7 @@ tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
 #%%
 # Build data structure
-YEAR = 2012
+YEAR = 2018
 DROPS = ['Year','Event','Week','comp_level','set','match','winner']
 COLS_REN = {
     'Key': 'key',
@@ -196,6 +196,7 @@ print("Median (absolute) error:", np.sqrt(np.square(residuals).median()))
 
 # %%
 
+# %% [markdown]
 # ## Conclusion
 # This isn't a very suprising result. We expect OPRs to be mediocre at best even
 # on the event scale, where data is much less sparse and more useful. However,
