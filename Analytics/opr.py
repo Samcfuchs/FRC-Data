@@ -15,6 +15,8 @@ import os
 tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
 # %% [markdown]
+# ## Data Manipulation
+#
 # First we need to organize our data into a more useful format. This OPR model
 # doesn't model interaction effects in opponent alliances, so we will split the
 # data along alliance (i.e. each match has two rows--one for the blue and one
@@ -57,19 +59,20 @@ teams = list(set([t for a in data.teams for t in a]))
 data.head(10)
 
 # %% [markdown]
+# ## Math etc.
+#
 # Now we can build what we will call the sparse matrix. This is just one of our
 # component matrices, but I term it the sparse matrix only because the data we
 # have is incredibly sparse--most teams never play with one another, and each
 # team doesn't play in very many matches. This matrix has columns which are
 # teams and rows, which are alliance-matches. Each row has a 1 for each team
 # that competed in that alliance-match.
-
-# %% [markdown]
-# ## Optimization
 #
-# But we can optimize this process a lot! Populating the sparse matrix is slowed
-# down significantly by the fact that we're doing it on a pandas dataframe. If
-# we work with a dictionary instead, we can use the `update` function to speed
+# ### Optimization
+#
+# We have optimized this process a lot! Populating the sparse matrix was slowed
+# down significantly by the fact that we were doing it on a pandas dataframe. By
+# working with a dictionary instead, we can use the `update` function to speed
 # up our indexing by orders of magnitude.
 #
 # First we'll build an empty matrix. This is a dictionary holding a lot of
@@ -83,14 +86,11 @@ row = {t:0 for t in teams}
 sparse = {f"{r.key}_{r.alliance[0]}":dict(row) for i,r in data.iterrows()}
 
 # %% [markdown]
-# Now we'll iterate over the dataframe again, but this time we'll use the faster
-# indexing function of the dictionary instead of slow pandas indexing to insert
-# values back into the sparse matrix.
-
-#%% [markdown] 
-# Here we populate the matrix with 1's everywhere that a team participated in
-# the match in question. This is the step that takes the longest--we should try
-# to optimize this more if possible.
+# Here we populate the matrix (which is currently all zeros) with 1's everywhere
+# that a team participated in the alliance-match in question. We'll iterate over
+# the original dataframe again, but this time we'll use the faster indexing
+# function of the dictionary instead of slow pandas indexing to insert values
+# back into the sparse matrix.
 
 # %%
 # Populate matrix
@@ -124,10 +124,26 @@ opr_table = pd.DataFrame({'team':teams, 'opr':oprs})
 opr_table.sort_values('opr', ascending=False, inplace=True)
 opr_table.head()
 
+# %% [markdown]
+# ## Analytics
+# 
+# How useful are world OPRs really? We can look at a distribution of all teams'
+# OPRs to get a sense of how quality is distributed among the teams.
+
 #%%
 # Visualize OPRs
-sns.kdeplot(opr_table.opr, shade=True)
-plt.show()
+fig, (ax1,ax2) = plt.subplots(1,2, figsize=(12,6))
+sns.kdeplot(opr_table.opr, shade=True, ax=ax1)
+ax1.set_title("OPR Distribution")
+ax1.set_xlabel("OPR")
+ax1.set_ylabel("Density")
+
+ax2.plot(list(opr_table.opr))
+ax2.set_title("OPR Distribution")
+ax2.set_xlabel("Rank")
+ax2.set_ylabel("OPR")
+
+fig.show()
 
 # %% [markdown]
 # How useful are these predictions? It's hard to say. Let's put some numbers on
@@ -173,3 +189,17 @@ print("Median (absolute) error:", np.sqrt(np.square(residuals).median()))
 # This makes it look like our prediction model is probably a bit more accurate,
 # although it's influenced by outliers--essentially, it can't predict when teams
 # have standout performances.
+# 
+# We might ask, however, whether we can at least predict match outcomes--maybe
+# we can't tell what the margin of victory will be, but at least maybe we can
+# find the victor and a rough sense of their likelihood to win.
+
+# %%
+
+# ## Conclusion
+# This isn't a very suprising result. We expect OPRs to be mediocre at best even
+# on the event scale, where data is much less sparse and more useful. However,
+# we can see that world OPRs can be calculated very easily, and with some degree
+# of accuracy. We might expect them to be useful as an addition to another
+# model, but on their own, they make too many assumptions, chiefly the
+# assumption of independence, to be an accurate predictor.
