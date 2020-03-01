@@ -363,7 +363,7 @@ class OPRModel:
         return self.opr_table
     
     
-    def predict(self):
-        pass
+    def predict(self, alliance):
+        return self.opr_table.loc[alliance, "opr"].sum()
     
 
