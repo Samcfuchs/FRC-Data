@@ -35,7 +35,7 @@ plt.show()
 
 # %%
 YEAR = 2019
-EVENT = "cmpmi"
+EVENT = "necmp"
 FILENAME = f"../data/{YEAR}_MatchData_ol.csv"
 
 event_model = OPRModel()
@@ -50,3 +50,20 @@ sns.kdeplot(event_model.opr_table.opr, shade=True)
 plt.xlabel("OPR")
 plt.ylabel("Density")
 plt.show()
+
+# %% [markdown]
+# A more conventional analytics technique might be to average together all of a
+# team's scoring performances. However, because this metric doesn't account for
+# the abilities of their alliance members, we find that it's significantly less
+# accurate than the OPR metric.
+
+# %%
+event_data_6 = pd.read_csv(f"../data/{YEAR}_MatchData.csv")
+event_data_6 = event_data_6.loc[event_data_6.Event==EVENT,:]
+event_data_6.head(12)
+
+# %%
+team = 195
+event_data_6.loc[event_data_6.Team==team, "totalPoints"].mean() / 3
+
+# %%
