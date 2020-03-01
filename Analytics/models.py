@@ -331,22 +331,6 @@ class OPRModel:
 
 
     def build_sparse_matrix(self, data):
-        sparse = pd.DataFrame(0, index=np.arange(len(data)), columns=['key','alliance','score']+self.teams)
-        sparse['key'] = data['key']
-        sparse['alliance'] = data['alliance']
-        sparse['score'] = data['score']
-
-        def f(row):
-            sparse.loc[(sparse.key==row.key) & (sparse.alliance==row.alliance), row.teams] = 1
-
-        self.data.apply(f, axis=1)
-
-        self.sparse = sparse
-        
-        return sparse
-
-
-    def build_sparse_matrix_fast(self, data):
         row = {t:0 for t in self.teams}
         sparse = {f"{r.key}_{r.alliance[0]}":dict(row) for i,r in data.iterrows()}
 
@@ -359,12 +343,12 @@ class OPRModel:
     
         self.sparse = sparse_m
 
-        return row
+        return self.sparse
 
 
     def train(self, filename):
         self.load(filename)
-        self.build_sparse_matrix_fast(self.data)
+        self.build_sparse_matrix(self.data)
 
         #coef = self.sparse.drop(['key','alliance','score'], axis=1).to_numpy()
         coef = self.sparse
@@ -372,7 +356,8 @@ class OPRModel:
 
         self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }
 
-        self.opr_table = pd.DataFrame({'team':self.teams, 'opr':self.oprs})
+        #self.opr_table = pd.DataFrame({'team':self.teams, 'opr':self.oprs})
+        self.opr_table = pd.DataFrame({'opr':self.oprs}, index=self.teams)
         self.opr_table.sort_values('opr', ascending=False, inplace=True)
 
         return self.opr_table
