@@ -121,8 +121,8 @@ function update() {
             .attr('fill-opacity', ALPHA);
     });
 
-    team = d3.select("#team").node().value;
-    rows = data.filter( obj => { return obj.Team === team; } );
+    let team = d3.select("#team").node().value;
+    let rows = data.filter( obj => { return obj.Team === team; } );
     console.log(rows)
 
     if (rows.length > 0) {
