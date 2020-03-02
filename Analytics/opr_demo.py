@@ -27,14 +27,14 @@ teams, train_data = OPRModel.load(data)
 model.train(train_data, train_data.score)
 
 print(f"Time: {int(time.time() - start)} s")
-model.opr_table.head(10)
+model.table.head(10)
 
 # %% [markdown]
 # We can use this OPR table to visualize the rough distribution of skill in the
 # given year.
 
 # %%
-sns.kdeplot(model.opr_table.opr, shade=True)
+sns.kdeplot(model.table.opr, shade=True)
 plt.title(f"{YEAR} OPR Distribution")
 plt.xlabel("OPR")
 plt.ylabel("Density")
@@ -58,7 +58,7 @@ teams, train_data = OPRModel.load(event_data)
 event_model.train(train_data, train_data.score).head()
 
 # %%
-sns.kdeplot(event_model.opr_table.opr, shade=True)
+sns.kdeplot(event_model.table.opr, shade=True)
 plt.title(f"{YEAR}{EVENT} OPR Distribution")
 plt.xlabel("OPR")
 plt.ylabel("Density")
@@ -83,3 +83,57 @@ event_data_6.loc[event_data_6.Team==team, "totalPoints"].mean() / 3
 # In this event, team 195 (the CyberKnights) have an OPR of 38, but a standard
 # mean scoring statistic is only 29--a significant difference in a game that
 # generally scored fewer than 100 points.
+
+# %%
+elo_2019 = pd.read_csv(f"data/{YEAR}_end_elos.csv",index_col=0)
+elo_2019.head()
+combo = pd.concat([elo_2019, model.table], axis=1, join='inner')
+plt.scatter(combo.Rating, combo.opr)
+plt.xlabel("Elo Rating")
+plt.ylabel("OPR")
+plt.show()
+
+# %%
+plt.plot(combo.Rank, combo.Rating)
+plt.show()
+
+# %% [markdown]
+# Because of the way the model is generalized, we can also calculate
+# contributions to other metrics, like hatch panels or cargo delivered.
+
+# %%
+YEAR = 2019
+EVENT = "necmp"
+FILENAME = f"../data/{YEAR}_MatchData_ol.csv"
+
+panel_model = OPRModel()
+cargo_model = OPRModel()
+
+year_data = pd.read_csv(FILENAME)
+event_data_6 = pd.read_csv(f"../data/{YEAR}_MatchData.csv")
+
+event_data = year_data.loc[(year_data.Event==EVENT) & (year_data["Competition Level"]=='qm'), :]
+event_data_6 = event_data_6.loc[(event_data_6.Event==EVENT) & (event_data_6["Competition Level"]=='qm'), :]
+
+event_data_goals = event_data_6.loc[event_data_6["Robot Number"]==1, ["hatchPanelPoints","cargoPoints"]]
+
+teams, train_data = OPRModel.load(event_data)
+
+panel_model.train(train_data, event_data_goals.hatchPanelPoints)
+cargo_model.train(train_data, event_data_goals.cargoPoints)
+
+# %% [markdown]
+# We can visualize this data to see how teams tend to prioritize cargo points
+# against panel points. This plot allows us to identify teams with a strong bias
+# toward one scoring object or another.
+
+# %%
+x = cargo_model.table.opr.sort_index()
+y = panel_model.table.opr.sort_index()
+plt.scatter(x, y)
+plt.title(f"{YEAR}{EVENT} Contributions to Cargo vs Panel Points")
+plt.xlabel("Cargo Points Contribution")
+plt.ylabel("Panel Points Contribution")
+plt.show()
+
+# %%
