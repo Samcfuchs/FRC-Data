@@ -369,29 +369,27 @@ class OPRModel:
 
         self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }
 
-        self.opr_table = pd.DataFrame({'opr':self.oprs}, index=self.teams)
-        self.opr_table.sort_values('opr', ascending=False, inplace=True)
+        self.table = pd.DataFrame({'opr':self.oprs}, index=self.teams)
+        self.table.sort_values('opr', ascending=False, inplace=True)
 
-        return self.opr_table
+        return self.table
 
-    """
-    def train(self, filename):
-        self.load(filename)
-        self.build_sparse_matrix(self.data)
 
-        coef = self.sparse
-        self.oprs,self.resid,_,_ = np.linalg.lstsq(coef, self.data.score, rcond=None)
-
-        self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }
-
-        #self.opr_table = pd.DataFrame({'team':self.teams, 'opr':self.oprs})
-        self.opr_table = pd.DataFrame({'opr':self.oprs}, index=self.teams)
-        self.opr_table.sort_values('opr', ascending=False, inplace=True)
-
-        return self.opr_table
-    """
-    
     def predict(self, alliance):
-        return self.opr_table.loc[alliance, "opr"].sum()
+        """ Predict the total score for an alliance """
+        return self.table.loc[alliance, "opr"].sum()
+
+
+    def rank(self):
+        """ Rank and sort the table """
+        self.table["Rank"] = self.table.opr.rank(ascending=False)
+        self.table.sort_values('opr', ascending=False, inplace=True)
+
+
+    def export(self, filename):
+        """ Export the table to a csv file """
+        columns = ["opr", "Rank"]
+        self.rank()
+        self.table.to_csv(filename, columns=columns)
     
 
