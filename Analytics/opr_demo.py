@@ -53,7 +53,7 @@ FILENAME = f"../data/{YEAR}_MatchData_ol.csv"
 event_model = OPRModel()
 
 year_data = pd.read_csv(FILENAME)
-event_data = year_data.loc[year_data.Event==EVENT, :]
+event_data = year_data.loc[year_data.Event==EVENT, :].copy()
 teams, train_data = OPRModel.load(event_data)
 event_model.train(train_data, train_data.score).head()
 
@@ -86,15 +86,17 @@ event_data_6.loc[event_data_6.Team==team, "totalPoints"].mean() / 3
 
 # %%
 elo_2019 = pd.read_csv(f"data/{YEAR}_end_elos.csv",index_col=0)
-elo_2019.head()
 combo = pd.concat([elo_2019, model.table], axis=1, join='inner')
-plt.scatter(combo.Rating, combo.opr)
+plt.scatter(combo.Rating, combo.opr, alpha=0.30)
 plt.xlabel("Elo Rating")
 plt.ylabel("OPR")
 plt.show()
 
 # %%
 plt.plot(combo.Rank, combo.Rating)
+plt.title("Elo Rating distribution")
+plt.xlabel("Elo Rank")
+plt.ylabel("Elo Rating")
 plt.show()
 
 # %% [markdown]
@@ -112,8 +114,8 @@ cargo_model = OPRModel()
 year_data = pd.read_csv(FILENAME)
 event_data_6 = pd.read_csv(f"../data/{YEAR}_MatchData.csv")
 
-event_data = year_data.loc[(year_data.Event==EVENT) & (year_data["Competition Level"]=='qm'), :]
-event_data_6 = event_data_6.loc[(event_data_6.Event==EVENT) & (event_data_6["Competition Level"]=='qm'), :]
+event_data = year_data.loc[(year_data.Event==EVENT) & (year_data["Competition Level"]=='qm'), :].copy()
+event_data_6 = event_data_6.loc[(event_data_6.Event==EVENT) & (event_data_6["Competition Level"]=='qm'), :].copy()
 
 event_data_goals = event_data_6.loc[event_data_6["Robot Number"]==1, ["hatchPanelPoints","cargoPoints"]]
 
