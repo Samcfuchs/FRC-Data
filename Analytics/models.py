@@ -297,13 +297,12 @@ class OPRModel:
         self.logging = logging
 
 
-    """
-    Import a file produced by MatchData_oneline and build a DataFrame that can
-    be used to construct the sparse matrix and train the model.
-    """
     @staticmethod
     def load(dataframe):
-        """ Loaded docstring """
+    """
+        Import a file produced by MatchData_oneline and build a DataFrame that can
+        be used to construct the sparse matrix and train the model.
+        """
         DROPS = ['Year','Event','Week','comp_level','set','match','winner']
         COLS_REN = {
             'Key': 'key',
@@ -335,12 +334,12 @@ class OPRModel:
         return teams, data
 
 
-    """
-    Build the sparse matrix from match-alliance pairs and event-match keys.
-
-    """
     def build_sparse_matrix(self, data, teams=None):
-        # If no list of teams is given, extract names of all teams from data
+        """
+        Build the sparse matrix from match-alliance pairs and event-match keys.
+        If no list of teams is given, extract names of all teams from data
+        """
+        
         if teams is None:
             teams = list(set([ t for a in data.teams for t in a ]))
         self.teams = teams
@@ -361,7 +360,19 @@ class OPRModel:
 
         return self.sparse
 
+
     def train(self, data, y):
+        """
+        Construct the sparse matrix and fit OPRs for the scores in y. Returns
+        a dataframe representation of the OPR table.
+
+        Arguments:
+        data -- a dataframe with a column `teams` which contains tuples of the
+        members of each alliance for each alliance-match record.
+        y    -- a 1-dimensional numpy array of the scores of each
+        alliance-match. These must be in the same order as `data`, but they can
+        represent any metric that the model should solve for.
+        """
         self.build_sparse_matrix(data)
 
         coef = self.sparse
