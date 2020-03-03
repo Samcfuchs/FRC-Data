@@ -293,8 +293,8 @@ class TSModel:
 
 class OPRModel:
 
-    def __init__(self, logging=False):
-        self.logging = logging
+    def __init__(self):
+        pass
 
 
     @staticmethod
