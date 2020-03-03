@@ -299,7 +299,7 @@ class OPRModel:
 
     @staticmethod
     def load(dataframe):
-    """
+        """
         Import a file produced by MatchData_oneline and build a DataFrame that can
         be used to construct the sparse matrix and train the model.
         """
@@ -376,11 +376,11 @@ class OPRModel:
         self.build_sparse_matrix(data)
 
         coef = self.sparse
-        self.oprs, self.resid,_,_ = np.linalg.lstsq(coef, y, rcond=None)
+        oprs, self.resid,_,_ = np.linalg.lstsq(coef, y, rcond=None)
 
-        self.opr_dict = { t:o for (t,o) in zip(self.teams, self.oprs) }
+        self.opr_dict = { t:o for (t,o) in zip(self.teams, oprs) }
 
-        self.table = pd.DataFrame({'opr':self.oprs}, index=self.teams)
+        self.table = pd.DataFrame({'opr':oprs}, index=self.teams)
         self.table.sort_values('opr', ascending=False, inplace=True)
 
         return self.table
