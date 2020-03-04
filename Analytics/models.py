@@ -8,7 +8,7 @@ import os
 
 tba = tbapy.TBA(os.environ['TBA_API_KEY'])
 
-def process_data(df):
+def process_data(data):
     """
     Collate teams into 3-tuple alliances for each match and drop extra columns.
     """
@@ -18,6 +18,7 @@ def process_data(df):
         'Set Number': 'set',
     }
     team_cols = ['blue1','blue2','blue3','red1','red2','red3']
+    df = data.copy()
 
     df.rename(columns=cols_ren, inplace=True)
 
@@ -310,7 +311,7 @@ class OPRModel:
             'red score':'score',   'red':'teams'
         }
 
-        data = dataframe
+        data = dataframe.copy()
         data = process_data(data)
         data = sort_data(data)
         data = data.drop(DROPS, axis=1)
