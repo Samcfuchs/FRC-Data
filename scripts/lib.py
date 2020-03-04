@@ -172,6 +172,8 @@ def trim_breakdown_2020(robot_number, score_breakdown):
                     trimmed['endgame'] = val
                 elif "initLine" in field:
                     trimmed['autoLine'] = str(val == "Exited")
+        elif field == "endgameRungIsLevel":
+            trimmed[field] = str(score_breakdown[field]=="IsLevel")
         else:
             trimmed[field] = score_breakdown[field]
     
