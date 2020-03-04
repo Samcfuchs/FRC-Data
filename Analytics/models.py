@@ -376,10 +376,9 @@ class OPRModel:
 
         self.opr_dict = { t:o for (t,o) in zip(self.teams, oprs) }
 
-        self.table = pd.DataFrame({'opr':oprs}, index=self.teams)
+        self.table = pd.DataFrame(oprs, index=self.teams)
         self.table.index.name = 'team'
-        print(self.table.index.name)
-        self.table.sort_values('opr', ascending=False, inplace=True)
+        #self.table.sort_values('opr', ascending=False, inplace=True)
 
         return self.table
 
