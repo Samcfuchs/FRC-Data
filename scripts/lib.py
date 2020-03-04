@@ -102,7 +102,8 @@ zero_days = {
     "2016": date(2016, 2, 23),
     "2017": date(2017, 2, 21),
     '2018': date(2018, 2, 20),
-    '2019': date(2019, 2, 19)
+    '2019': date(2019, 2, 19),
+    '2020': date(2020, 2, 15)
 }
 def get_week(date):
     """ Get the FRC-conventional week number of the given date """
@@ -143,6 +144,7 @@ breakdown_2016 = ["adjustPoints","autoBoulderPoints","autoBouldersHigh","autoBou
 breakdown_2017 = ["adjustPoints","autoFuelHigh","autoFuelLow","autoFuelPoints","autoMobilityPoints","autoPoints","autoRotorPoints","foulCount","foulPoints","kPaBonusPoints","kPaRankingPointAchieved","autoMobility","rotor1Auto","rotor1Engaged","rotor2Auto","rotor2Engaged","rotor3Engaged","rotor4Engaged","rotorBonusPoints","rotorRankingPointAchieved","tba_rpEarned","techFoulCount","teleopFuelHigh","teleopFuelLow","teleopFuelPoints","teleopPoints","teleopRotorPoints","teleopTakeoffPoints","totalPoints","touchpadFar","touchpadMiddle","touchpadNear"]
 breakdown_2018 = ["adjustPoints","autoOwnershipPoints","autoPoints","autoQuestRankingPoint","autoRun","autoRunPoints","autoScaleOwnershipSec","autoSwitchAtZero","autoSwitchOwnershipSec","endgamePoints","endgame","faceTheBossRankingPoint","foulCount","foulPoints","rp","tba_gameData","techFoulCount","teleopOwnershipPoints","teleopPoints","teleopScaleBoostSec","teleopScaleForceSec","teleopScaleOwnershipSec","teleopSwitchBoostSec","teleopSwitchForceSec","teleopSwitchOwnershipSec","totalPoints","vaultBoostPlayed","vaultBoostTotal","vaultForcePlayed","vaultForceTotal","vaultLevitatePlayed","vaultLevitateTotal","vaultPoints"]
 breakdown_2019 = ['adjustPoints', 'autoPoints', 'bay1', 'bay2', 'bay3', 'bay4', 'bay5', 'bay6', 'bay7', 'bay8', 'cargoPoints', 'completeRocketRankingPoint', 'completedRocketFar', 'completedRocketNear', 'endgame', 'foulCount', 'foulPoints', 'habClimbPoints', 'habDockingRankingPoint', 'habLine', 'hatchPanelPoints', 'lowLeftRocketFar', 'lowLeftRocketNear', 'lowRightRocketFar', 'lowRightRocketNear', 'midLeftRocketFar', 'midLeftRocketNear', 'midRightRocketFar', 'midRightRocketNear', 'preMatchBay1', 'preMatchBay2', 'preMatchBay3', 'preMatchBay6', 'preMatchBay7', 'preMatchBay8', 'preMatchLevel', 'rp', 'sandStormBonusPoints', 'techFoulCount', 'teleopPoints', 'topLeftRocketFar', 'topLeftRocketNear', 'topRightRocketFar', 'topRightRocketNear', 'totalPoints']
+breakdown_2020 = ["adjustPoints", "autoCellPoints", "autoCellsBottom", "autoCellsInner", "autoCellsOuter", "autoInitLinePoints", "autoPoints", "controlPanelPoints", "endgamePoints", "endgame", "endgameRungIsLevel", "foulCount", "foulPoints", "initLine", "rp", "shieldEnergizedRankingPoint", "shieldOperationalRankingPoint", "stage1Activated", "stage2Activated", "stage3Activated", "stage3TargetColor", "tba_numRobotsHanging", "tba_shieldEnergizedRankingPointFromFoul", "techFoulCount", "teleopCellPoints", "teleopCellsBottom", "teleopCellsInner", "teleopCellsOuter", "teleopPoints", "totalPoints"]
 
 headers = {
     "2014": breakdown_2014,
@@ -151,7 +153,29 @@ headers = {
     "2017": breakdown_2017,
     "2018": breakdown_2018,
     "2019": breakdown_2019,
+    "2020": breakdown_2020
 }
+
+# Identifies fields that contain robot-specific data
+robot_pattern = re.compile(r"Robot\d$")
+
+def trim_breakdown_2020(robot_number, score_breakdown):
+    """ Trim the score breakdown to include only the scores of the robot_number provided """
+    trimmed = {}
+    # Iterate over fields in the score breakdown
+    for field in score_breakdown:
+        if robot_pattern.search(field):
+            fieldbotnumber = int(field[-1]) # Get the number for the robot indicated by this data field
+            if robot_number == fieldbotnumber:
+                val = score_breakdown[field]
+                if "endgame" in field:
+                    trimmed['endgame'] = val
+                elif "initLine" in field:
+                    trimmed['autoLine'] = str(val == "Exited")
+        else:
+            trimmed[field] = score_breakdown[field]
+    
+    return trimmed
 
 def calculate_score_2019(result):
     result = result.lower()
@@ -282,5 +306,6 @@ breakdown_trimmers = {
     '2016': trim_breakdown_2016,
     '2017': trim_breakdown_2017,
     '2018': trim_breakdown_2018,
-    '2019': trim_breakdown_2019
+    '2019': trim_breakdown_2019,
+    '2020': trim_breakdown_2020
 }
