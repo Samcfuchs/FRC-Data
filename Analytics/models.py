@@ -363,8 +363,10 @@ class OPRModel:
         a dataframe representation of the OPR table.
 
         Arguments:
+
         data -- a dataframe with a column `teams` which contains tuples of the
         members of each alliance for each alliance-match record.
+
         y    -- a 1-dimensional numpy array of the scores of each
         alliance-match. These must be in the same order as `data`, but they can
         represent any metric that the model should solve for.
