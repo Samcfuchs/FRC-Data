@@ -313,11 +313,11 @@ class OPRModel:
         data = data.drop(DROPS, axis=1)
 
         # Break into alliances
-        blue = data.loc[:, ['Key','blue score', 'blue']]
+        blue = data[['blue score', 'blue']]
         blue['Alliance'] = ['blue']*len(blue)
         blue.rename(columns=COLS_REN, inplace=True)
 
-        red = data.loc[:, ['Key','red score','red']]
+        red = data[['red score','red']]
         red['Alliance'] = ['red']*len(red)
         red.rename(columns=COLS_REN, inplace=True)
 
@@ -377,6 +377,8 @@ class OPRModel:
         self.opr_dict = { t:o for (t,o) in zip(self.teams, oprs) }
 
         self.table = pd.DataFrame({'opr':oprs}, index=self.teams)
+        self.table.index.name = 'team'
+        print(self.table.index.name)
         self.table.sort_values('opr', ascending=False, inplace=True)
 
         return self.table
