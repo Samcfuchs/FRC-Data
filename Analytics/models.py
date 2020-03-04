@@ -22,7 +22,6 @@ def process_data(data):
 
     df.rename(columns=cols_ren, inplace=True)
 
-    df.drop(['City','State','Country','Time'], axis=1, inplace=True)
     df.winner.fillna('tie', inplace=True)
     df.dropna(inplace=True)
     df.red3 = pd.to_numeric(df.red3) # For 2006
@@ -32,8 +31,6 @@ def process_data(data):
     df.drop(team_cols, axis=1, inplace=True)
 
     df = df.loc[df['blue score'] + df['red score'] > -2,:]
-
-    df.reset_index(drop=True, inplace=True)
 
     return df
 
@@ -51,7 +48,6 @@ def sort_data(df):
     df['event_n'] = df.Event.map(event_f)
 
     df.sort_values(sort_order, inplace=True)
-    df.reset_index(inplace=True, drop=True)
 
     df.drop(['event_n','comp_level_n'], axis=1, inplace=True)
 
@@ -304,7 +300,7 @@ class OPRModel:
         Import a file produced by MatchData_oneline and build a DataFrame that can
         be used to construct the sparse matrix and train the model.
         """
-        DROPS = ['Year','Event','Week','comp_level','set','match','winner']
+        DROPS = ['Year','Event','Week','comp_level','set','match','winner','City','State','Country','Time']
         COLS_REN = {
             'Key': 'key',
             'blue score':'score',  'blue':'teams',
@@ -318,17 +314,16 @@ class OPRModel:
 
         # Break into alliances
         blue = data.loc[:, ['Key','blue score', 'blue']]
-        blue['alliance'] = ['blue']*len(blue)
+        blue['Alliance'] = ['blue']*len(blue)
         blue.rename(columns=COLS_REN, inplace=True)
-        blue.index = blue.index * 2
 
         red = data.loc[:, ['Key','red score','red']]
-        red['alliance'] = ['red']*len(red)
+        red['Alliance'] = ['red']*len(red)
         red.rename(columns=COLS_REN, inplace=True)
-        red.index = red.index * 2 + 1
 
         data = pd.concat([blue,red], axis=0).sort_index()
-        data = data[['key','alliance','teams','score']]
+        data.set_index([data.index,"Alliance"], inplace=True)
+        data = data[['teams','score']]
 
         teams = list(set([t for a in data.teams for t in a]))
 
@@ -345,7 +340,7 @@ class OPRModel:
             teams = list(set([ t for a in data.teams for t in a ]))
         self.teams = teams
 
-        index = lambda r: f"{r.key}_{r.alliance[0]}"
+        index = lambda r: '_'.join(r.name)
 
         row = {t:0 for t in self.teams}
         sparse = { index(r):dict(row) for i,r in data.iterrows() }
