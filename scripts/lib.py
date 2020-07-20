@@ -4,27 +4,26 @@ import time
 import re
 import os
 import tbapy
+import json
 
 def get_keys():
+    """ Retrieve API keys from keys.json in the project root """
     print("Loading API keys")
-    tba_regex =       r"^TBA_AUTH_KEY:\s*\"(\S*)\"$"
-    google_regex = r"^GOOGLE_AUTH_KEY:\s*\"(\S*)\"$"
-
-    # Get text from file
-    with open("keys.txt", 'r') as f:
-        text = f.read()
     
-    tba_match = re.search(tba_regex, text, re.MULTILINE)
-    google_match = re.search(google_regex, text, re.MULTILINE)
-
-    if tba_match:
-        tba_key = tba_match.group(1)
-    else:
+    with open("keys.json", 'r') as f:
+        keys = json.load(f)
+    
+    tba_key = ""
+    google_key = ""
+    
+    try:
+        tba_key = keys['TBA_API_KEY']
+    except KeyError:
         print("No TBA key found")
     
-    if google_match:
-        google_key = google_match.group(1)
-    else:
+    try:
+        google_key = keys['GOOGLE_API_KEY']
+    except KeyError:
         print("No Google key found")
     
     return (tba_key, google_key)
@@ -53,7 +52,7 @@ TBA_BASE = "https://www.thebluealliance.com/api/v3"
 
 def init():
     # Get keys
-    TBA_KEY, GOOGLE_KEY = get_keys_env()
+    TBA_KEY, GOOGLE_KEY = get_keys()
 
     # Store google key
     os.environ["GOOGLE_API_KEY"] = GOOGLE_KEY

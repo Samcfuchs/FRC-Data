@@ -24,5 +24,6 @@ dist/
 
 Analytics/test\.py
 Analytics/compiled/elo_testing_*
+keys.json
 
 !/www/data/*

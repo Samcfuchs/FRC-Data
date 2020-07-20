@@ -15,8 +15,8 @@ authorization keys. You can get a TBA key
 google's geocoder API to get geographic coordinates for each team. Learn more
 about the geocoding API and get a key
 [here](https://developers.google.com/maps/documentation/geocoding/get-api-key).
-Once you have authorization keys, add them to your environment variables as
-`TBA_API_KEY` and `GOOGLE_API_KEY` respectively.
+Once you have authorization keys, add them to a `keys.json` file in the project
+root as `TBA_API_KEY` and `GOOGLE_API_KEY` respectively.
 
 ## Analytics
 
@@ -33,5 +33,5 @@ using, there's always the possibility that a change in the future could break
 these. If you're encountering errors, please feel free to create an issue or PR.
 In particular, the MatchData script does a lot of preprocessing of the data from
 The Blue Alliance, and as a result it needs to be updated on a yearly basis.
-Unfortunately, FIRST releases it's API spec as late as week 1 competitions
+Unfortunately, FIRST releases its API spec as late as week 1 competitions
 sometimes, so I'm unable to update them until then.

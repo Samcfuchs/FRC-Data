@@ -5,8 +5,17 @@ from typing import Tuple
 import math
 import tbapy
 import os
+import json
+import lib
 
-tba = tbapy.TBA(os.environ['TBA_API_KEY'])
+try:
+    with open("../keys.json", 'r') as f:
+        data = json.load(f)
+        tba_key = data['TBA_API_KEY']
+
+    tba = tbapy.TBA(tba_key)
+except KeyError:
+    print("No TBA key loaded")
 
 def process_data(data):
     """
@@ -23,7 +32,7 @@ def process_data(data):
     df.rename(columns=cols_ren, inplace=True)
 
     df.winner.fillna('tie', inplace=True)
-    df.dropna(inplace=True)
+    #df.dropna(inplace=True)
     df.red3 = pd.to_numeric(df.red3) # For 2006
 
     df['blue'] = list(zip(df.blue1, df.blue2, df.blue3))
@@ -313,11 +322,11 @@ class OPRModel:
         data = data.drop(DROPS, axis=1)
 
         # Break into alliances
-        blue = data[['blue score', 'blue']]
+        blue = data[['blue score', 'blue']].copy()
         blue['Alliance'] = ['blue']*len(blue)
         blue.rename(columns=COLS_REN, inplace=True)
 
-        red = data[['red score','red']]
+        red = data[['red score','red']].copy()
         red['Alliance'] = ['red']*len(red)
         red.rename(columns=COLS_REN, inplace=True)
 
@@ -340,7 +349,7 @@ class OPRModel:
             teams = list(set([ t for a in data.teams for t in a ]))
         self.teams = teams
 
-        index = lambda r: '_'.join(r.name)
+        index = lambda r: '_'.join(map(str, r.name))
 
         row = {t:0 for t in self.teams}
         sparse = { index(r):dict(row) for i,r in data.iterrows() }
@@ -373,8 +382,13 @@ class OPRModel:
         """
         self.build_sparse_matrix(data)
 
-        coef = self.sparse
-        oprs, self.resid,_,_ = np.linalg.lstsq(coef, y, rcond=None)
+        coef = self.sparse.astype(np.bool)
+        #scores = y.to_numpy()
+        scores = np.array(y, dtype=np.uint8)
+
+        print("coef shape:", coef.shape)
+        print("y shape:", y.shape)
+        oprs, self.resid,_,_ = np.linalg.lstsq(coef, scores, rcond=-1)
 
         self.opr_dict = { t:o for (t,o) in zip(self.teams, oprs) }
 
