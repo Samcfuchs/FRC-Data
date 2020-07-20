@@ -6,7 +6,6 @@ import math
 import tbapy
 import os
 import json
-import lib
 
 try:
     with open("../keys.json", 'r') as f:
@@ -16,6 +15,7 @@ try:
     tba = tbapy.TBA(tba_key)
 except KeyError:
     print("No TBA key loaded")
+
 
 def process_data(data):
     """
@@ -126,23 +126,20 @@ class EloModel:
         b = row['blue']
         r = row['red']
 
+        # find the win probability for blue
         p_b = self.predict(b, r)
 
         if self.logging:
             self.log['Key'].append(row.Key)
             self.log['Prediction'].append(p_b)
             
-        if row.winner == 'blue':
-            outcome = 1.0
-        elif row.winner == 'red':
-            outcome = 0.0
-        elif row.winner == 'tie':
-            outcome = 0.5
-        
-        d = self.K * (outcome - p_b)
+        # calculate the rating adjustment
+        outcome = { 'blue': 1.0, 'red': 0.0, 'tie': 0.5 }[row.winner]
+        delta = self.K * (outcome - p_b)
 
-        self.table.loc[row['blue'], 'Rating'] += d
-        self.table.loc[row['red'], 'Rating'] -= d
+        # apply adjustment
+        self.table.loc[row['blue'], 'Rating'] += delta
+        self.table.loc[row['red'], 'Rating'] -= delta
     
     
     def test(self, winner) -> float:
